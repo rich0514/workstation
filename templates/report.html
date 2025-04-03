@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>報表 - 創似紀生活文創</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f0f8ff;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative; /* 為定位按鈕 */
+        }
+        h1, h2 {
+            color: #ff69b4;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        select {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ff69b4;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ff69b4;
+            text-align: center;
+        }
+        th {
+            background-color: #ff69b4;
+            color: white;
+        }
+        .summary {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .error {
+            color: red;
+        }
+        .home-button {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            padding: 10px 20px;
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .home-button:hover {
+            background-color: #ff85c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/view" class="home-button">回到首頁</a>
+        <h1>創似紀生活文創</h1>
+        <h2>{{ username }} 的報表</h2>
+        <select id="month_select" onchange="loadReport()">
+            <option value="">選擇月份</option>
+            {% for month in months %}
+            <option value="{{ month }}">{{ month }}</option>
+            {% endfor %}
+        </select>
+        <div id="report_summary" class="summary"></div>
+        <table id="report_table">
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>SKU</th>
+                    <th>銷售額</th>
+                    <th>數量</th>
+                </tr>
+            </thead>
+            <tbody id="report_body"></tbody>
+        </table>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        function loadReport() {
+            const month = document.getElementById("month_select").value;
+            if (!month) {
+                document.getElementById("report_summary").innerHTML = "";
+                document.getElementById("report_body").innerHTML = "";
+                return;
+            }
+
+            console.log('開始載入報表，月份：', month); // 添加日誌
+            fetch(`/report/{{ username }}/${month}`, { timeout: 5000 })
+                .then(response => {
+                    console.log('收到響應：', response); // 添加日誌
+                    if (!response.ok) {
+                        throw new Error(`無法載入報表，狀態碼：${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('收到報表數據：', data); // 添加日誌
+                    const summary = document.getElementById("report_summary");
+                    const reportBody = document.getElementById("report_body");
+                    reportBody.innerHTML = ""; // 清空現有報表
+
+                    // 顯示總計，四捨五入到小數點第一位
+                    summary.innerHTML = `
+                        總銷售額：${data.total_sales.toFixed(1)}<br>
+                        總數量：${data.total_quantity}<br>
+                        抽成比例：${data.commission_rate.toFixed(1)}%<br>
+                        抽成金額：${data.commission.toFixed(1)}<br>
+                        實匯金額：${data.net_amount.toFixed(1)}
+                    `;
+
+                    // 顯示報表數據
+                    if (data.data && Array.isArray(data.data)) {
+                        data.data.forEach(item => {
+                            console.log('處理報表項目：', item); // 添加日誌
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                                <td>${item['項目']}</td>
+                                <td>${item['SKU']}</td>
+                                <td>${parseFloat(item['銷售額']).toFixed(1)}</td>
+                                <td>${item['數量']}</td>
+                            `;
+                            reportBody.appendChild(row);
+                        });
+                    } else {
+                        console.log('報表數據為空或格式錯誤');
+                        const message = document.getElementById("message");
+                        message.className = "error";
+                        message.innerHTML = "報表數據為空或格式錯誤";
+                    }
+                })
+                .catch(error => {
+                    console.error('載入報表失敗：', error); // 添加日誌
+                    const message = document.getElementById("message");
+                    message.className = "error";
+                    message.innerHTML = "載入報表失敗：" + error.message;
+                })
+                .finally(() => {
+                    console.log('loadReport 函數執行完成'); // 添加日誌
+                });
+        }
+
+        // 頁面載入時執行
+        window.onload = function() {
+            console.log('報表頁面載入，開始執行 loadReport...'); // 添加日誌
+            loadReport();
+        };
+    </script>
+</body>
+</html>

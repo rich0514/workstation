@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>管理頁面 - 創似紀生活文創</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f0f8ff;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #ff69b4;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        input[type="text"], input[type="password"], select, input[type="file"] {
+            width: 300px; /* 固定寬度 */
+            padding: 10px;
+            margin: 10px auto; /* 居中對齊 */
+            display: block; /* 確保居中 */
+            border: 2px solid #ff69b4;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px; /* 調整按鈕間距 */
+        }
+        button:hover {
+            background-color: #ff85c0;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+        .user-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .user-list li {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            display: flex; /* 橫向排列 */
+            align-items: center; /* 垂直居中 */
+            justify-content: space-between; /* 內容分佈 */
+        }
+        .user-list li button {
+            margin-left: 10px; /* 按鈕間距 */
+        }
+        .logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .error-list {
+            text-align: left;
+            margin-top: 10px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>創似紀生活文創</h1>
+        <h2>管理頁面</h2>
+
+        <div class="section">
+            <h3>品牌管理</h3>
+            <input type="text" id="new_username" placeholder="新品牌名">
+            <input type="text" id="new_user_id" placeholder="品牌編號">
+            <input type="password" id="new_password" placeholder="密碼">
+            <input type="text" id="new_commission" placeholder="抽成百分比（例如：10）">
+            <button onclick="addUser()">新增品牌</button>
+        </div>
+
+        <div class="section">
+            <h3>品牌列表</h3>
+            <ul id="user_list" class="user-list"></ul>
+        </div>
+
+        <div class="section">
+            <h3>單個上傳報表</h3>
+            <select id="upload_username">
+                <option value="">選擇品牌</option>
+            </select>
+            <select id="upload_month">
+                <option value="">選擇月份</option>
+            </select>
+            <input type="file" id="report_file" accept=".xlsx">
+            <button onclick="uploadReport()">上傳報表</button>
+        </div>
+
+        <div class="section">
+            <h3>批量上傳報表</h3>
+            <input type="file" id="batch_report_files" accept=".xlsx" multiple>
+            <button onclick="batchUploadReports()">批量上傳報表</button>
+        </div>
+
+        <div class="section">
+            <h3>變更密碼</h3>
+            <input type="text" id="admin_username" placeholder="管理員用戶名">
+            <input type="password" id="new_admin_password" placeholder="新密碼">
+            <button onclick="changePassword()">變更密碼</button>
+        </div>
+
+        <div class="section">
+            <h3>上傳公司 Logo</h3>
+            <input type="file" id="logo_file" accept=".jpg">
+            <button onclick="uploadLogo()">上傳 Logo</button>
+        </div>
+
+        <p><a href="/view">查看品牌頁面</a></p>
+        <p id="message"></p>
+        <div id="error_list" class="error-list"></div>
+    </div>
+
+    <script>
+        // 檢查管理員權限
+        const role = localStorage.getItem('adminRole');
+        if (!role) {
+            window.location.href = '/admin/login';
+        }
+
+        // 載入品牌列表
+        function loadUsers() {
+            fetch('/admin/users', { timeout: 5000 })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('無法載入品牌列表');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('收到品牌列表數據：', data); // 添加日誌
+                    const userList = document.getElementById("user_list");
+                    const uploadUsername = document.getElementById("upload_username");
+                    userList.innerHTML = "";
+                    uploadUsername.innerHTML = '<option value="">選擇品牌</option>';
+                    if (data.users && Array.isArray(data.users)) {
+                        data.users.forEach(user => {
+                            console.log('處理品牌：', user); // 添加日誌
+                            const li = document.createElement("li");
+                            li.innerHTML = `
+                                <span>${user.username} (ID: ${user.user_id}, 抽成: ${user.commission}%)</span>
+                                <div>
+                                    <button onclick="editUser('${user.username}')">編輯</button>
+                                    <button onclick="deleteUser('${user.username}')">刪除</button>
+                                    <button onclick="viewReports('${user.username}')">查看報表</button>
+                                </div>
+                            `;
+                            userList.appendChild(li);
+                            const option = document.createElement("option");
+                            option.value = user.username;
+                            option.text = user.username;
+                            uploadUsername.appendChild(option);
+                        });
+                    } else {
+                        console.log('品牌列表為空或格式錯誤');
+                        const message = document.getElementById("message");
+                        message.className = "error";
+                        message.innerHTML = "品牌列表為空或格式錯誤";
+                    }
+                })
+                .catch(error => {
+                    console.error('載入品牌列表失敗：', error); // 添加日誌
+                    const message = document.getElementById("message");
+                    message.className = "error";
+                    message.innerHTML = "載入品牌列表失敗：" + error.message;
+                });
+        }
+
+        // 載入月份（預設為上個月）
+        function loadMonths() {
+            const uploadMonth = document.getElementById("upload_month");
+            const now = new Date();
+            const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1);
+            const yearMonth = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, '0')}`;
+            const option = document.createElement("option");
+            option.value = yearMonth;
+            option.text = yearMonth;
+            uploadMonth.appendChild(option);
+        }
+
+        // 新增品牌
+        function addUser() {
+            const username = document.getElementById("new_username").value;
+            const userId = document.getElementById("new_user_id").value;
+            const password = document.getElementById("new_password").value;
+            const commission = document.getElementById("new_commission").value;
+            const message = document.getElementById("message");
+
+            fetch('/admin/add_user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, user_id: userId, password, commission })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('新增品牌失敗');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    message.className = "error";
+                    message.innerHTML = data.error;
+                } else {
+                    message.className = "success";
+                    message.innerHTML = data.message;
+                    loadUsers(); // 確保新增後刷新列表
+                    // 清空輸入框
+                    document.getElementById("new_username").value = "";
+                    document.getElementById("new_user_id").value = "";
+                    document.getElementById("new_password").value = "";
+                    document.getElementById("new_commission").value = "";
+                }
+            })
+            .catch(error => {
+                message.className = "error";
+                message.innerHTML = "新增品牌失敗：" + error.message;
+            });
+        }
+
+        // 編輯品牌
+        function editUser(username) {
+            const newPassword = prompt("輸入新密碼：", "");
+            const newCommission = prompt("輸入新抽成百分比：", "");
+            const message = document.getElementById("message");
+
+            if (newPassword !== null && newCommission !== null) {
+                fetch('/admin/edit_user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password: newPassword, commission: newCommission })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('編輯品牌失敗');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        message.className = "error";
+                        message.innerHTML = data.error;
+                    } else {
+                        message.className = "success";
+                        message.innerHTML = data.message;
+                        loadUsers();
+                    }
+                })
+                .catch(error => {
+                    message.className = "error";
+                    message.innerHTML = "編輯品牌失敗：" + error.message;
+                });
+            }
+        }
+
+        // 刪除品牌
+        function deleteUser(username) {
+            if (confirm(`確定要刪除品牌 ${username} 嗎？`)) {
+                fetch('/admin/delete_user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('刪除品牌失敗');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const message = document.getElementById("message");
+                    if (data.error) {
+                        message.className = "error";
+                        message.innerHTML = data.error;
+                    } else {
+                        message.className = "success";
+                        message.innerHTML = data.message;
+                        loadUsers();
+                    }
+                })
+                .catch(error => {
+                    const message = document.getElementById("message");
+                    message.className = "error";
+                    message.innerHTML = "刪除品牌失敗：" + error.message;
+                });
+            }
+        }
+
+        // 查看報表
+        function viewReports(username) {
+            window.location.href = `/admin/reports/${username}`;
+        }
+
+        // 單個上傳報表
+        function uploadReport() {
+            const username = document.getElementById("upload_username").value;
+            const month = document.getElementById("upload_month").value;
+            const file = document.getElementById("report_file").files[0];
+            const message = document.getElementById("message");
+
+            if (!username || !month || !file) {
+                message.className = "error";
+                message.innerHTML = "請填寫所有欄位並選擇檔案！";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('username', username);
+            formData.append('month', month);
+            formData.append('file', file);
+
+            fetch('/admin/upload_report', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('上傳報表響應：', response); // 添加日誌
+                if (!response.ok) {
+                    throw new Error('上傳報表失敗');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('上傳報表數據：', data); // 添加日誌
+                if (data.error) {
+                    message.className = "error";
+                    message.innerHTML = data.error;
+                } else {
+                    message.className = "success";
+                    message.innerHTML = data.message;
+                }
+            })
+            .catch(error => {
+                console.error('上傳報表失敗：', error); // 添加日誌
+                message.className = "error";
+                message.innerHTML = "上傳報表失敗：" + error.message;
+            });
+        }
+
+        // 批量上傳報表
+        function batchUploadReports() {
+            const files = document.getElementById("batch_report_files").files;
+            const message = document.getElementById("message");
+            const errorList = document.getElementById("error_list");
+
+            if (files.length === 0) {
+                message.className = "error";
+                message.innerHTML = "請選擇至少一個檔案！";
+                return;
+            }
+
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+            }
+
+            fetch('/admin/batch_upload_reports', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('批量上傳報表響應：', response); // 添加日誌
+                if (!response.ok) {
+                    throw new Error('批量上傳報表失敗');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('批量上傳報表數據：', data); // 添加日誌
+                message.className = "success";
+                message.innerHTML = data.message;
+                // 顯示錯誤訊息（如果有）
+                errorList.innerHTML = "";
+                if (data.errors && data.errors.length > 0) {
+                    const ul = document.createElement("ul");
+                    data.errors.forEach(error => {
+                        const li = document.createElement("li");
+                        li.className = "error";
+                        li.textContent = error;
+                        ul.appendChild(li);
+                    });
+                    errorList.appendChild(ul);
+                }
+            })
+            .catch(error => {
+                console.error('批量上傳報表失敗：', error); // 添加日誌
+                message.className = "error";
+                message.innerHTML = "批量上傳報表失敗：" + error.message;
+            });
+        }
+
+        // 上傳 Logo
+        function uploadLogo() {
+            const file = document.getElementById("logo_file").files[0];
+            const message = document.getElementById("message");
+
+            if (!file) {
+                message.className = "error";
+                message.innerHTML = "請選擇檔案！";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/admin/upload_logo', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('上傳 Logo 響應：', response); // 添加日誌
+                if (!response.ok) {
+                    throw new Error('上傳 Logo 失敗');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('上傳 Logo 數據：', data); // 添加日誌
+                if (data.error) {
+                    message.className = "error";
+                    message.innerHTML = data.error;
+                } else {
+                    message.className = "success";
+                    message.innerHTML = data.message;
+                    window.location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('上傳 Logo 失敗：', error); // 添加日誌
+                message.className = "error";
+                message.innerHTML = "上傳 Logo 失敗：" + error.message;
+            });
+        }
+
+        // 變更密碼
+        function changePassword() {
+            const username = document.getElementById("admin_username").value;
+            const newPassword = document.getElementById("new_admin_password").value;
+            const message = document.getElementById("message");
+
+            fetch('/admin/change_password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, new_password: newPassword })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('變更密碼失敗');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    message.className = "error";
+                    message.innerHTML = data.error;
+                } else {
+                    message.className = "success";
+                    message.innerHTML = data.message;
+                    // 清空輸入框
+                    document.getElementById("admin_username").value = "";
+                    document.getElementById("new_admin_password").value = "";
+                }
+            })
+            .catch(error => {
+                message.className = "error";
+                message.innerHTML = "變更密碼失敗：" + error.message;
+            });
+        }
+
+        // 頁面載入時執行
+        window.onload = function() {
+            loadUsers();
+            loadMonths();
+        };
+    </script>
+</body>
+</html>

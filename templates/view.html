@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>品牌頁面 - 創似紀生活文創</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f0f8ff;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #ff69b4;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #ff69b4;
+        }
+        input[type="password"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ff69b4;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #ff85c0;
+        }
+        .error {
+            color: red;
+        }
+        .user-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .user-list li {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+        .admin-buttons {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>創似紀生活文創</h1>
+        <h2>品牌頁面</h2>
+        <h3>品牌列表</h3>
+        <ul id="user_list" class="user-list"></ul>
+        <div id="admin_buttons" class="admin-buttons" style="display: none;">
+            <button onclick="window.location.href='/admin'">新增品牌</button>
+            <button onclick="window.location.href='/admin'">編輯品牌</button>
+        </div>
+        <button id="login_button" onclick="window.location.href='/admin/login'">後台登入</button>
+        <button id="logout_button" onclick="logout()" style="display: none;">登出</button>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        // 檢查是否為管理員
+        const role = localStorage.getItem('adminRole');
+        if (role) {
+            document.getElementById("admin_buttons").style.display = "block";
+            document.getElementById("login_button").style.display = "none";
+            document.getElementById("logout_button").style.display = "block";
+        } else {
+            document.getElementById("admin_buttons").style.display = "none";
+            document.getElementById("login_button").style.display = "block";
+            document.getElementById("logout_button").style.display = "none";
+        }
+
+        // 登出功能
+        function logout() {
+            localStorage.removeItem('adminRole');
+            window.location.reload();
+        }
+
+        // 載入品牌列表
+        function loadUsers() {
+            console.log('開始載入品牌列表...'); // 添加日誌
+            fetch('/view/users', { timeout: 5000 })
+                .then(response => {
+                    console.log('收到響應：', response); // 添加日誌
+                    if (!response.ok) {
+                        throw new Error(`無法載入品牌列表，狀態碼：${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('收到品牌列表數據：', data); // 添加日誌
+                    const userList = document.getElementById("user_list");
+                    userList.innerHTML = ""; // 清空現有列表
+                    if (data.users && Array.isArray(data.users)) {
+                        data.users.forEach(user => {
+                            console.log('處理品牌：', user); // 添加日誌
+                            const li = document.createElement("li");
+                            li.textContent = `${user.username}`; // 只顯示品牌名稱
+                            li.onclick = () => promptPassword(user.username);
+                            userList.appendChild(li);
+                        });
+                    } else {
+                        console.log('品牌列表為空或格式錯誤');
+                        const message = document.getElementById("message");
+                        message.className = "error";
+                        message.innerHTML = "品牌列表為空或格式錯誤";
+                    }
+                })
+                .catch(error => {
+                    console.error('載入品牌列表失敗：', error); // 添加日誌
+                    const message = document.getElementById("message");
+                    message.className = "error";
+                    message.innerHTML = "載入品牌列表失敗：" + error.message;
+                })
+                .finally(() => {
+                    console.log('loadUsers 函數執行完成'); // 添加日誌
+                });
+        }
+
+        // 提示輸入密碼
+        function promptPassword(username) {
+            const password = prompt(`請輸入 ${username} 的密碼：`);
+            if (password !== null) {
+                fetch('/view/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('驗證品牌失敗');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const message = document.getElementById("message");
+                    if (data.error) {
+                        message.className = "error";
+                        message.innerHTML = data.error;
+                    } else {
+                        window.location.href = `/view/reports/${username}`;
+                    }
+                })
+                .catch(error => {
+                    const message = document.getElementById("message");
+                    message.className = "error";
+                    message.innerHTML = "驗證品牌失敗：" + error.message;
+                });
+            }
+        }
+
+        // 頁面載入時執行
+        window.onload = function() {
+            console.log('頁面載入，開始執行 loadUsers...'); // 添加日誌
+            loadUsers();
+        };
+    </script>
+</body>
+</html>
