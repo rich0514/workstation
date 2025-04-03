@@ -9,25 +9,41 @@ import shutil
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pandas as pd
-import bcrypt
+# 移除 bcrypt 導入，添加 argon2-cffi 導入
+from argon2 import PasswordHasher
 
 app = Flask(__name__)
 
-# 設定路徑（使用 os.path 確保跨平台兼容）
+# 設定路徑（使用 os.path 確保跨平台相容）
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-USERS_FILE = os.path.join(BASE_DIR, 'users.json')
-ADMIN_FILE = os.path.join(BASE_DIR, 'admin.json')
-USERS_DIR = os.path.join(BASE_DIR, 'users')
-UPLOADS_DIR = os.path.join(BASE_DIR, 'static', 'uploads')
-LOGO_FILE = os.path.join(BASE_DIR, 'static', 'logo.jpg')
-# 設置備份明文密碼的日誌檔案路徑
-LOGS_DIR = os.path.join(BASE_DIR, 'logs')
-PASSWORD_BACKUP_LOG = os.path.join(LOGS_DIR, 'password_backup.log')
+USERS_FILE = os.path.join(BASE_DIR, 'users.json')  # 使用者資料檔案
+ADMIN_FILE = os.path.join(BASE_DIR, 'admin.json')  # 管理員資料檔案
+USERS_DIR = os.path.join(BASE_DIR, 'users')  # 使用者報表資料目錄
+UPLOADS_DIR = os.path.join(BASE_DIR, 'static', 'uploads')  # 上傳檔案目錄
+LOGO_FILE = os.path.join(BASE_DIR, 'static', 'logo.jpg')  # Logo 檔案
+# 設定備份明文密碼的日誌檔案路徑
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')  # 日誌目錄
+PASSWORD_BACKUP_LOG = os.path.join(LOGS_DIR, 'password_backup.log')  # 密碼備份日誌
 
 # 初始化資料夾和檔案
 for directory in [USERS_DIR, UPLOADS_DIR, LOGS_DIR]:
     if not os.path.exists(directory):
         os.makedirs(directory)
+
+# 初始化 PasswordHasher（全域變數）
+ph = PasswordHasher()
+
+# 密碼哈希函數（使用 argon2-cffi）
+def hash_password(password):
+    return ph.hash(password)
+
+# 驗證密碼（使用 argon2-cffi）
+def check_password(stored_password, provided_password):
+    try:
+        ph.verify(stored_password, provided_password)
+        return True
+    except:
+        return False
 
 if not os.path.exists(USERS_FILE):
     with open(USERS_FILE, 'w', encoding='utf-8') as f:
@@ -63,15 +79,7 @@ password_backup_handler = logging.FileHandler(PASSWORD_BACKUP_LOG, encoding='utf
 password_backup_handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(message)s'))
 password_backup_logger.addHandler(password_backup_handler)
 
-# 密碼哈希函數
-def hash_password(password):
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-# 驗證密碼
-def check_password(stored_password, provided_password):
-    return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password.encode('utf-8'))
-
-# 讀取用戶資料
+# 讀取使用者資料
 def load_users():
     try:
         with open(USERS_FILE, 'r', encoding='utf-8-sig') as f:
@@ -89,7 +97,7 @@ def load_users():
             json.dump({}, f, indent=4, ensure_ascii=False)
         return {}
 
-# 儲存用戶資料
+# 儲存使用者資料
 def save_users(users):
     try:
         # 使用臨時檔案寫入，確保原子性
@@ -181,7 +189,7 @@ def check_user_id_unique(user_id, users, exclude_username=None):
             return False
     return True
 
-# 解析檔名（改進：支援更靈活的格式）
+# 解析檔案名稱（改進：支援更靈活的格式）
 def parse_filename(filename):
     # 支援格式：202503安妮醬.xlsx 或 安妮醬_202503.xlsx
     # 修改後的正則表達式，允許品牌名稱以數字開頭
@@ -552,7 +560,9 @@ def verify_user():
     user_password_match = check_password(users[username]['password'], password)
 
     # 檢查管理員密碼是否匹配（假設管理員用戶名為 'admin'）
-    admin_password_match = 'admin' in admins and check_password(admins['admin']['password'], password)
+    admin_password_match = False
+    if 'admin' in admins:
+        admin_password_match = check_password(admins['admin']['password'], password)
 
     # 如果用戶密碼或管理員密碼匹配，則允許登入
     if user_password_match or admin_password_match:
@@ -654,7 +664,7 @@ def download_report_excel(username, month):
         os.remove(temp_path)
     except PermissionError as e:
         logging.warning(f"無法刪除臨時檔案 {temp_path}：{str(e)}")
-        # 可選：記錄檔案路徑，稍後再嘗試刪除（例如使用定時任務）
+        # 可選：記錄檔案路徑，稍後再次嘗試刪除（例如使用定時任務）
     except Exception as e:
         logging.error(f"刪除臨時檔案 {temp_path} 時發生錯誤：{str(e)}")
 
