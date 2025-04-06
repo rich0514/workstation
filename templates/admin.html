@@ -19,20 +19,34 @@
             border-radius: 15px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        h1, h2 {
+        h1, h2, h3 {
             color: #ff69b4;
         }
         h1 {
             font-size: 2.5em;
             margin-bottom: 20px;
         }
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+        h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
         input[type="text"], input[type="password"], select, input[type="file"] {
-            width: 300px; /* 固定寬度 */
+            width: 300px;
             padding: 10px;
-            margin: 10px auto; /* 居中對齊 */
-            display: block; /* 確保居中 */
+            margin: 10px auto;
+            display: block;
             border: 2px solid #ff69b4;
             border-radius: 5px;
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:hover, input[type="password"]:hover, select:hover, input[type="file"]:hover {
+            border-color: #ff85c0;
         }
         button {
             padding: 10px 20px;
@@ -41,7 +55,10 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin: 5px; /* 調整按鈕間距 */
+            margin: 5px;
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            font-size: 1em;
+            transition: background-color 0.3s;
         }
         button:hover {
             background-color: #ff85c0;
@@ -55,30 +72,49 @@
         .user-list {
             list-style-type: none;
             padding: 0;
+            margin: 0 auto;
+            max-width: 600px;
         }
         .user-list li {
             margin: 10px 0;
             padding: 10px;
             background-color: #f0f0f0;
             border-radius: 5px;
-            display: flex; /* 橫向排列 */
-            align-items: center; /* 垂直居中 */
-            justify-content: space-between; /* 內容分佈 */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #ff69b4;
         }
         .user-list li button {
-            margin-left: 10px; /* 按鈕間距 */
+            margin-left: 10px;
         }
         .logo {
             max-width: 200px;
             margin-bottom: 20px;
         }
         .section {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #ff69b4;
+        }
+        .section:last-child {
+            border-bottom: none;
         }
         .error-list {
             text-align: left;
             margin-top: 10px;
             color: red;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        a {
+            color: #ff69b4;
+            text-decoration: none;
+            font-size: 1.1em;
+        }
+        a:hover {
+            color: #ff85c0;
         }
     </style>
 </head>
@@ -159,14 +195,14 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log('收到品牌列表數據：', data); // 添加日誌
+                    console.log('收到品牌列表數據：', data);
                     const userList = document.getElementById("user_list");
                     const uploadUsername = document.getElementById("upload_username");
                     userList.innerHTML = "";
                     uploadUsername.innerHTML = '<option value="">選擇品牌</option>';
                     if (data.users && Array.isArray(data.users)) {
                         data.users.forEach(user => {
-                            console.log('處理品牌：', user); // 添加日誌
+                            console.log('處理品牌：', user);
                             const li = document.createElement("li");
                             li.innerHTML = `
                                 <span>${user.username} (ID: ${user.user_id}, 抽成: ${user.commission}%)</span>
@@ -190,7 +226,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('載入品牌列表失敗：', error); // 添加日誌
+                    console.error('載入品牌列表失敗：', error);
                     const message = document.getElementById("message");
                     message.className = "error";
                     message.innerHTML = "載入品牌列表失敗：" + error.message;
@@ -235,8 +271,7 @@
                 } else {
                     message.className = "success";
                     message.innerHTML = data.message;
-                    loadUsers(); // 確保新增後刷新列表
-                    // 清空輸入框
+                    loadUsers();
                     document.getElementById("new_username").value = "";
                     document.getElementById("new_user_id").value = "";
                     document.getElementById("new_password").value = "";
@@ -345,14 +380,14 @@
                 body: formData
             })
             .then(response => {
-                console.log('上傳報表響應：', response); // 添加日誌
+                console.log('上傳報表響應：', response);
                 if (!response.ok) {
                     throw new Error('上傳報表失敗');
                 }
                 return response.json();
             })
             .then(data => {
-                console.log('上傳報表數據：', data); // 添加日誌
+                console.log('上傳報表數據：', data);
                 if (data.error) {
                     message.className = "error";
                     message.innerHTML = data.error;
@@ -362,7 +397,7 @@
                 }
             })
             .catch(error => {
-                console.error('上傳報表失敗：', error); // 添加日誌
+                console.error('上傳報表失敗：', error);
                 message.className = "error";
                 message.innerHTML = "上傳報表失敗：" + error.message;
             });
@@ -390,17 +425,16 @@
                 body: formData
             })
             .then(response => {
-                console.log('批量上傳報表響應：', response); // 添加日誌
+                console.log('批量上傳報表響應：', response);
                 if (!response.ok) {
                     throw new Error('批量上傳報表失敗');
                 }
                 return response.json();
             })
             .then(data => {
-                console.log('批量上傳報表數據：', data); // 添加日誌
+                console.log('批量上傳報表數據：', data);
                 message.className = "success";
                 message.innerHTML = data.message;
-                // 顯示錯誤訊息（如果有）
                 errorList.innerHTML = "";
                 if (data.errors && data.errors.length > 0) {
                     const ul = document.createElement("ul");
@@ -414,7 +448,7 @@
                 }
             })
             .catch(error => {
-                console.error('批量上傳報表失敗：', error); // 添加日誌
+                console.error('批量上傳報表失敗：', error);
                 message.className = "error";
                 message.innerHTML = "批量上傳報表失敗：" + error.message;
             });
@@ -439,14 +473,14 @@
                 body: formData
             })
             .then(response => {
-                console.log('上傳 Logo 響應：', response); // 添加日誌
+                console.log('上傳 Logo 響應：', response);
                 if (!response.ok) {
                     throw new Error('上傳 Logo 失敗');
                 }
                 return response.json();
             })
             .then(data => {
-                console.log('上傳 Logo 數據：', data); // 添加日誌
+                console.log('上傳 Logo 數據：', data);
                 if (data.error) {
                     message.className = "error";
                     message.innerHTML = data.error;
@@ -457,7 +491,7 @@
                 }
             })
             .catch(error => {
-                console.error('上傳 Logo 失敗：', error); // 添加日誌
+                console.error('上傳 Logo 失敗：', error);
                 message.className = "error";
                 message.innerHTML = "上傳 Logo 失敗：" + error.message;
             });
@@ -487,7 +521,6 @@
                 } else {
                     message.className = "success";
                     message.innerHTML = data.message;
-                    // 清空輸入框
                     document.getElementById("admin_username").value = "";
                     document.getElementById("new_admin_password").value = "";
                 }
