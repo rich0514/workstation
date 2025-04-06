@@ -27,6 +27,14 @@ PASSWORD_BACKUP_LOG = os.path.join(LOGS_DIR, 'password_backup.log')  # 密碼備
 for directory in [USERS_DIR, UPLOADS_DIR, LOGS_DIR]:
     if not os.path.exists(directory):
         os.makedirs(directory)
+        logging.info(f"初始化目錄：{directory}")
+
+# 檢查並列出 users 目錄中的品牌
+if os.path.exists(USERS_DIR):
+    existing_brands = [d for d in os.listdir(USERS_DIR) if os.path.isdir(os.path.join(USERS_DIR, d))]
+    logging.info(f"找到的品牌目錄：{existing_brands}")
+else:
+    logging.error(f"users 目錄不存在：{USERS_DIR}")
 
 # 初始化 PasswordHasher（全域變數）
 ph = PasswordHasher()
@@ -395,6 +403,7 @@ def summary_report():
 
         users = load_users()
         summary_data = []
+        logging.info(f"所有品牌（從 users.json）：{list(users.keys())}")
 
         for username in users.keys():
             if brand_filter and username != brand_filter:
@@ -406,11 +415,10 @@ def summary_report():
                 logging.warning(f"品牌 {username} 的報表目錄不存在：{user_dir}")
                 continue
 
-            for report_file in os.listdir(user_dir):
-                if not report_file.endswith('.json'):
-                    logging.debug(f"跳過非 JSON 檔案：{report_file}")
-                    continue
+            report_files = [f for f in os.listdir(user_dir) if f.endswith('.json')]
+            logging.info(f"品牌 {username} 的報表檔案：{report_files}")
 
+            for report_file in report_files:
                 month = report_file.replace('.json', '')
                 if month_filter and month != month_filter:
                     logging.debug(f"跳過月份 {month}（不符合篩選條件）")
@@ -424,6 +432,9 @@ def summary_report():
                         report = json.load(f)
                 except json.JSONDecodeError as e:
                     logging.error(f"無法解析報表檔案 {report_path}：{str(e)}")
+                    continue
+                except Exception as e:
+                    logging.error(f"讀取報表檔案 {report_path} 失敗：{str(e)}")
                     continue
 
                 if 'data' not in report or not isinstance(report['data'], list):
@@ -460,7 +471,11 @@ def summary_report():
 @app.route('/admin/summary_page')
 def summary_page():
     logging.debug("訪問 /admin/summary_page")
-    return render_template('summary.html')
+    try:
+        return render_template('summary.html')
+    except Exception as e:
+        logging.error(f"渲染 summary.html 失敗：{str(e)}")
+        return jsonify({'error': f'無法渲染總覽報表頁面：{str(e)}'}), 500
 
 @app.route('/admin/reports/<username>')
 def admin_reports(username):
@@ -573,6 +588,83 @@ def change_password():
     password_backup_logger.info(f"管理員 {username} 的新密碼：{new_password}")
     logging.info(f"管理員 {username} 變更密碼")
     return jsonify({'message': '密碼變更成功！'})
+
+@app.route('/admin/export_summary_excel', methods=['POST'])
+def export_summary_excel():
+    logging.debug("訪問 /admin/export_summary_excel")
+    try:
+        data = request.get_json()
+        summary_data = data.get('summary', [])
+        totals = data.get('totals', {})
+
+        # 創建 DataFrame
+        df_data = []
+        for item in summary_data:
+            df_data.append({
+                '品牌名稱': item['username'],
+                '月份': item['month'],
+                '總銷售額': round(float(item['total_sales']), 1),
+                '總數量': item['total_quantity'],
+                '抽成百分比 (%)': round(float(item['commission_rate']), 1),
+                '總抽成': round(float(item['commission']), 1),
+                '總實匯金額': round(float(item['net_amount']), 1)
+            })
+
+        # 添加總計
+        df_data.append({})
+        df_data.append({
+            '品牌名稱': '總計',
+            '月份': '-',
+            '總銷售額': round(float(totals['total_sales']), 1),
+            '總數量': totals['total_quantity'],
+            '抽成百分比 (%)': '-',
+            '總抽成': round(float(totals['total_commission']), 1),
+            '總實匯金額': round(float(totals['total_net_amount']), 1)
+        })
+
+        # 轉為 DataFrame
+        df = pd.DataFrame(df_data)
+
+        # 儲存為臨時 Excel 檔案
+        temp_file = "總覽報表.xlsx"
+        temp_path = os.path.join(tempfile.gettempdir(), temp_file)
+
+        # 使用 openpyxl 生成 Excel 檔案
+        with pd.ExcelWriter(temp_path, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='總覽報表')
+            worksheet = writer.sheets['總覽報表']
+            # 設置列寬
+            for col in worksheet.columns:
+                max_length = 0
+                column = col[0].column_letter
+                for cell in col:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(str(cell.value))
+                    except:
+                        pass
+                adjusted_width = (max_length + 2) * 1.2
+                worksheet.column_dimensions[column].width = adjusted_width
+            # 設置字體為支援中文的字體
+            from openpyxl.styles import Font
+            font = Font(name='新細明體', size=12)
+            for row in worksheet.rows:
+                for cell in row:
+                    cell.font = font
+
+        # 返回檔案
+        response = send_file(temp_path, as_attachment=True, download_name=temp_file)
+
+        # 嘗試刪除臨時檔案
+        try:
+            os.remove(temp_path)
+        except Exception as e:
+            logging.warning(f"無法刪除臨時檔案 {temp_path}：{str(e)}")
+
+        return response
+    except Exception as e:
+        logging.error(f"匯出總覽報表失敗：{str(e)}")
+        return jsonify({'error': f'匯出總覽報表失敗：{str(e)}'}), 500
 
 @app.route('/view')
 def view():
