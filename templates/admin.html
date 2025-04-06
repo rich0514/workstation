@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>管理頁面 - 創似紀生活文創</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             font-family: 'Comic Sans MS', Arial, sans-serif;
@@ -129,6 +130,11 @@
             <h3>上傳公司 Logo</h3>
             <input type="file" id="logo_file" accept=".jpg">
             <button onclick="uploadLogo()">上傳 Logo</button>
+        </div>
+
+        <div class="section">
+            <h3>總覽報表</h3>
+            <button onclick="window.location.href='/admin/summary_page'">查看總覽報表</button>
         </div>
 
         <p><a href="/view">查看品牌頁面</a></p>
