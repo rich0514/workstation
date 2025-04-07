@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>上傳品牌 Logo</title>
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            background-color: #f8f8ff;
+            padding: 40px;
+            text-align: center;
+        }
+        form {
+            background: white;
+            display: inline-block;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, select {
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 250px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ff85c0;
+        }
+        .message {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🖼️ 上傳品牌 Logo</h1>
+    <p>建議尺寸：500x500 px 以內，格式支援 JPG / PNG</p>
+    <form id="logoForm" enctype="multipart/form-data" method="post" action="/admin/upload_logo">
+        <select name="username" required>
+            <option value="">請選擇品牌</option>
+            <!-- 品牌名稱動態生成 -->
+        </select><br>
+        <input type="file" name="logo" accept=".jpg,.jpeg,.png" required><br>
+        <button type="submit">上傳 Logo</button>
+    </form>
+    <div class="message" id="uploadMessage"></div>
+
+    <script>
+        // 動態載入品牌名稱（前端請求 API）
+        fetch('/admin/users')
+            .then(res => res.json())
+            .then(data => {
+                const select = document.querySelector("select[name='username']");
+                data.users.forEach(user => {
+                    const option = document.createElement("option");
+                    option.value = user.username;
+                    option.textContent = user.username;
+                    select.appendChild(option);
+                });
+            });
+
+        // 顯示成功或錯誤訊息（用後端 redirect 時可配合 flash 訊息系統）
+        const params = new URLSearchParams(window.location.search);
+        if (params.has("msg")) {
+            const msg = decodeURIComponent(params.get("msg"));
+            const el = document.getElementById("uploadMessage");
+            el.textContent = msg;
+            el.style.color = msg.includes("成功") ? "green" : "red";
+        }
+    </script>
+</body>
+</html>

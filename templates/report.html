@@ -1,143 +1,181 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <title>創世紀生活文創</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 80%;
-            max-width: 800px;
-        }
-        h1 {
-            text-align: center;
-            color: #ff69b4;
-        }
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        .summary {
-            margin-bottom: 20px;
-            text-align: center; /* 置中總結內容 */
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #ff69b4;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        .download-btn {
-            display: inline-block; /* 縮小按鈕 */
-            padding: 8px 16px; /* 調整按鈕大小 */
-            background-color: #ff69b4;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        .download-btn:hover {
-            background-color: #ff85c0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>報表 - 創似紀生活文創</title>
+  <!-- 引入 Google 字型 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+  <style>
+    /* 全局字型與背景 */
+    body {
+      font-family: 'Noto Sans TC', 'Comic Sans MS', Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(to bottom, #f0f8ff, #ffffff);
+    }
+    /* 主容器 */
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    /* 頁首 */
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    header h1 {
+      margin: 0;
+      color: #ff69b4;
+      font-size: 2.5em;
+    }
+    header h2 {
+      margin: 10px 0 20px;
+      color: #555;
+      font-size: 1.5em;
+    }
+    /* 月份下拉選單只設定50%寬度並置中 */
+    select#monthSelect {
+      width: 50%;
+      padding: 10px;
+      margin: 0 auto 20px auto;
+      border: 2px solid #ff69b4;
+      border-radius: 5px;
+      font-size: 1em;
+      display: block;
+    }
+    /* 其他下拉選單保持100% */
+    select:not(#monthSelect) {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 2px solid #ff69b4;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+    /* 報表總結區 */
+    .summary {
+      background-color: #fff0f5;
+      padding: 15px;
+      border: 1px solid #ff69b4;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.1em;
+      line-height: 1.6;
+    }
+    /* 報表表格 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+      font-size: 1em;
+    }
+    th {
+      background-color: #ff69b4;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    /* 下載按鈕 */
+    .download-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #ff69b4;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+    .download-btn:hover {
+      background-color: #ff85c0;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>創世紀生活文創</h1>
-        <h2>{{ username }} 的報表</h2>
-        <select id="monthSelect" onchange="loadReport()">
-            {% for month in months %}
-                <option value="{{ month }}">{{ month }}</option>
-            {% endfor %}
-        </select>
-        <div class="summary" id="summary">
-            <!-- 報表總結 -->
-            <!-- 下載按鈕將動態插入這裡 -->
-        </div>
-        <table id="reportTable">
-            <thead>
-                <tr>
-                    <th>項目</th>
-                    <th>SKU</th>
-                    <th>銷售額</th>
-                    <th>數量</th>
-                </tr>
-            </thead>
-            <tbody id="reportBody">
-                <!-- 報表數據 -->
-            </tbody>
-        </table>
+  <div class="container">
+    <header>
+      <h1>創似紀生活文創</h1>
+      <h2>{{ username }} 的報表</h2>
+    </header>
+    <!-- 將月份下拉選單改為 50% 寬度並置中 -->
+    <select id="monthSelect" onchange="loadReport()">
+      {% for month in months %}
+        <option value="{{ month }}">{{ month }}</option>
+      {% endfor %}
+    </select>
+    <div class="summary" id="summary">
+      <!-- 報表總結內容將由 JS 載入 -->
     </div>
-
-    <script>
-        function loadReport() {
-            const month = document.getElementById('monthSelect').value;
-            const username = "{{ username }}";
-            fetch(`/report/${username}/${month}`)
-                .then(response => response.json())
-                .then(data => {
-                    // 更新總結
-                    const summaryDiv = document.getElementById('summary');
-                    summaryDiv.innerHTML = `
-                        銷售總額：${data.total_sales}<br>
-                        總數量：${data.total_quantity}<br>
-                        抽成比例：${data.commission_rate}%<br>
-                        抽成金額：${data.commission}<br>
-                        實匯金額：${data.net_amount}<br>
-                        <a id="downloadBtn" href="/download_report_excel/${username}/${month}" class="download-btn">下載 Excel</a>
-                    `;
-                    // 更新表格
-                    const tbody = document.getElementById('reportBody');
-                    tbody.innerHTML = '';
-                    data.data.forEach(item => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${item.項目}</td>
-                            <td>${item.SKU}</td>
-                            <td>${item.銷售額}</td>
-                            <td>${item.數量}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                })
-                .catch(error => {
-                    console.error('載入報表失敗：', error);
-                });
-        }
-
-        // 頁面載入時自動載入第一個報表
-        window.onload = loadReport;
-    </script>
+    <table id="reportTable">
+      <thead>
+        <tr>
+          <th>項目</th>
+          <th>SKU</th>
+          <th>銷售額</th>
+          <th>數量</th>
+        </tr>
+      </thead>
+      <tbody id="reportBody">
+        <!-- 報表資料由 JS 載入 -->
+      </tbody>
+    </table>
+    <div style="text-align: center; margin-top: 20px;">
+      <a id="downloadBtn" class="download-btn" href="#">下載 Excel</a>
+    </div>
+  </div>
+  <script>
+    function loadReport() {
+      const month = document.getElementById('monthSelect').value;
+      const username = "{{ username }}";
+      fetch(`/report/${username}/${month}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('無法載入報表');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // 更新報表總結
+          const summaryDiv = document.getElementById('summary');
+          summaryDiv.innerHTML = `
+            銷售總額：${data.total_sales}<br>
+            總數量：${data.total_quantity}<br>
+            抽成比例：${data.commission_rate}%<br>
+            抽成金額：${data.commission}<br>
+            實匯金額：${data.net_amount}
+          `;
+          // 更新下載連結
+          const downloadBtn = document.getElementById('downloadBtn');
+          downloadBtn.href = `/download_report_excel/${username}/${month}`;
+          // 更新報表資料表格
+          const tbody = document.getElementById('reportBody');
+          tbody.innerHTML = '';
+          data.data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${item.項目}</td>
+              <td>${item.SKU}</td>
+              <td>${item.銷售額}</td>
+              <td>${item.數量}</td>
+            `;
+            tbody.appendChild(row);
+          });
+        })
+        .catch(error => {
+          console.error('載入報表失敗：', error);
+        });
+    }
+    window.onload = loadReport;
+  </script>
 </body>
 </html>

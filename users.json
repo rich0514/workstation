@@ -88,5 +88,15 @@
         "user_id": "066",
         "password": "$argon2id$v=19$m=65536,t=3,p=4$WR/C2++QmVKW20vM+oTWNw$IvqZpgRs2jOG4WhGLfJvzP0AILT1jcOTyihErzO6FhQ",
         "commission": 10.0
+    },
+    "創似紀生活文創": {
+        "user_id": "001",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$gUCxLJjoUo/J0RgQANZJXQ$O4cn8pqUoK9eoB/5MfLJqBmI38YwTWfRhL79CTLdg4o",
+        "commission": 30.0
+    },
+    "月下戀人": {
+        "user_id": "014",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$4QGz/wCwf5QSxFXr3fIucw$JxU33XsBP8HRwsQEz0JUgtOcxSqh5rkmpXkF966Kicg",
+        "commission": 30.0
     }
 }

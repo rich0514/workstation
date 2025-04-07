@@ -1,100 +1,105 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <title>管理員登入 - 創似紀生活文創</title>
-    <style>
-        body {
-            font-family: 'Comic Sans MS', Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-            background-color: #f0f8ff;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 15px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #ff69b4;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-        h2 {
-            color: #ff69b4;
-        }
-        input[type="text"], input[type="password"] {
-            width: 300px; /* 調整寬度 */
-            padding: 10px;
-            margin: 10px auto; /* 居中對齊 */
-            display: block; /* 確保居中 */
-            border: 2px solid #ff69b4;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #ff69b4;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        button:hover {
-            background-color: #ff85c0;
-        }
-        .error {
-            color: red;
-        }
-        .logo {
-            max-width: 200px;
-            margin-bottom: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>管理員登入 - 創似紀生活文創</title>
+  <!-- 引入 Google 字型 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', 'Comic Sans MS', Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      background-color: #f0f8ff;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #ff69b4;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    h2 {
+      color: #ff69b4;
+    }
+    input[type="text"], input[type="password"] {
+      width: 40%; /* 輸入框寬度調整為原來的一半 */
+      padding: 10px;
+      margin: 10px auto;
+      display: block;
+      border: 2px solid #ff69b4;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #ff85c0;
+    }
+    .error {
+      color: red;
+    }
+    .logo {
+      max-width: 200px;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>創似紀生活文創</h1>
-        <img src="/static/logo.jpg" alt="創似紀生活文創" class="logo" onerror="this.src='';">
-        <h2>管理員登入</h2>
-        <input type="text" id="username" placeholder="用戶名" onkeypress="if(event.keyCode==13) document.getElementById('password').focus();">
-        <input type="password" id="password" placeholder="密碼" onkeypress="if(event.keyCode==13) login();">
-        <button onclick="login()">登入</button>
-        <p id="message"></p>
-    </div>
+  <div class="container">
+    <h1>創似紀生活文創</h1>
+    <img src="/static/logo.jpg" alt="創似紀生活文創" class="logo" onerror="this.src='';">
+    <h2>管理員登入 🔒</h2>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="用戶名" required>
+      <input type="password" id="password" placeholder="密碼" required>
+      <button type="submit">登入</button>
+    </form>
+    <div class="message" id="message"></div>
+  </div>
 
-    <script>
-        function login() {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-            const message = document.getElementById("message");
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const message = document.getElementById("message");
 
-            const formData = new FormData();
-            formData.append('username', username);
-            formData.append('password', password);
+      const formData = new FormData();
+      formData.append('username', username);
+      formData.append('password', password);
 
-            fetch('/admin/login', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    message.className = "error";
-                    message.innerHTML = data.error;
-                } else {
-                    localStorage.setItem('adminRole', data.role);
-                    window.location.href = '/view';  // 登入後跳轉到首頁
-                }
-            })
-            .catch(error => {
-                message.className = "error";
-                message.innerHTML = "發生錯誤：" + error.message;
-            });
-        }
-    </script>
+      fetch('/admin/login', {
+          method: 'POST',
+          body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.error) {
+              message.textContent = data.error;
+              message.style.color = "red";
+          } else {
+              localStorage.setItem('adminRole', data.role);
+              window.location.href = '/admin';  // 登入後直接跳轉到 admin.html
+          }
+      })
+      .catch(error => {
+          message.textContent = "發生錯誤：" + error.message;
+          message.style.color = "red";
+      });
+    });
+  </script>
 </body>
 </html>
