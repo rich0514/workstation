@@ -4,44 +4,73 @@
     <meta charset="UTF-8">
     <title>管理頁面 - 創似紀生活文創</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Comic Sans MS', Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-            background-color: #f0f8ff;
+            font-family: 'Noto Sans TC', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
         }
         .container {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
+            max-width: 1200px;
+            margin: 20px auto; /* 減少頂部外邊距 */
+            padding: 20px; /* 減少內邊距 */
             background-color: #fff;
-            border-radius: 15px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        h1, h2, h3 {
+        h1, h3 {
             color: #ff69b4;
+            text-align: center;
         }
         h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-        h2 {
-            font-size: 1.8em;
-            margin-bottom: 15px;
+            font-size: 2em; /* 減小標題字體大小 */
+            margin-bottom: 15px; /* 減少底部間距 */
         }
         h3 {
-            font-size: 1.3em;
-            margin-bottom: 10px;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px; /* 減少卡片底部間距 */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eee;
+            text-align: center;
+        }
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+        }
+        .card .flex-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 20px;
+        }
+        .card .flex-container > div {
+            flex: 1;
+            min-width: 300px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
         }
         input[type="text"], input[type="password"], select, input[type="file"] {
-            width: 300px;
+            width: 100%;
+            max-width: 300px;
             padding: 10px;
             margin: 10px auto;
             display: block;
             border: 2px solid #ff69b4;
-            border-radius: 5px;
-            font-family: 'Comic Sans MS', Arial, sans-serif;
+            border-radius: 8px;
+            font-family: 'Noto Sans TC', Arial, sans-serif;
             font-size: 1em;
             transition: border-color 0.3s;
         }
@@ -49,25 +78,24 @@
             border-color: #ff85c0;
         }
         button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background-color: #ff69b4;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            margin: 5px;
-            font-family: 'Comic Sans MS', Arial, sans-serif;
             font-size: 1em;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.1s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin: 10px auto;
+            display: block;
         }
         button:hover {
             background-color: #ff85c0;
+            transform: translateY(-2px);
         }
-        .error {
-            color: red;
-        }
-        .success {
-            color: green;
+        button:active {
+            transform: translateY(0);
         }
         .user-list {
             list-style-type: none;
@@ -77,105 +105,194 @@
         }
         .user-list li {
             margin: 10px 0;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border-radius: 5px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border: 1px solid #ff69b4;
+            border: 1px solid #ddd;
+            transition: background-color 0.3s;
+        }
+        .user-list li:hover {
+            background-color: #f0f0f0;
         }
         .user-list li button {
             margin-left: 10px;
-        }
-        .logo {
-            max-width: 200px;
-            margin-bottom: 20px;
-        }
-        .section {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px dashed #ff69b4;
-        }
-        .section:last-child {
-            border-bottom: none;
-        }
-        .error-list {
-            text-align: left;
-            margin-top: 10px;
-            color: red;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+            padding: 8px 16px;
+            font-size: 0.9em;
+            display: inline-block;
         }
         a {
             color: #ff69b4;
             text-decoration: none;
-            font-size: 1.1em;
+            font-size: 1em; /* 減小字體大小 */
+            transition: color 0.3s;
         }
         a:hover {
             color: #ff85c0;
+        }
+        .dropdown {
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 8px;
+            right: 0;
+        }
+        .dropdown-content a {
+            color: #333;
+            padding: 10px 14px; /* 減小內邊距 */
+            text-decoration: none;
+            display: block;
+            font-size: 0.9em;
+        }
+        .dropdown-content a:hover {
+            background-color: #f9f9f9;
+            color: #ff69b4;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropbtn {
+            padding: 8px 16px; /* 減小按鈕大小 */
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em; /* 減小字體大小 */
+            transition: background-color 0.3s, transform 0.1s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        .dropbtn:hover {
+            background-color: #ff85c0;
+            transform: translateY(-2px);
+        }
+        .header {
+            position: relative;
+            text-align: center;
+            margin-bottom: 15px; /* 減少底部間距 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .header .nav-links {
+            position: absolute;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        hr {
+            border: 0;
+            border-top: 1px solid #ddd;
+            margin: 20px 0;
+        }
+        /* 模態框樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: #fff;
+            width: 400px;
+            max-width: 90%;
+            margin: 100px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .modal-content p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        .modal-content.error p {
+            color: #e74c3c;
+        }
+        .modal-content.success p {
+            color: #2ecc71;
+        }
+        .modal-content button {
+            margin: 10px auto;
+            padding: 10px 20px;
+            font-size: 1em;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>創似紀生活文創</h1>
-        <h2>管理頁面</h2>
-
-        <div class="section">
-            <h3>品牌管理</h3>
-            <input type="text" id="new_username" placeholder="新品牌名">
-            <input type="text" id="new_user_id" placeholder="品牌編號">
-            <input type="password" id="new_password" placeholder="密碼">
-            <input type="text" id="new_commission" placeholder="抽成百分比（例如：10）">
-            <button onclick="addUser()">新增品牌</button>
+        <div class="header">
+            <h1>創似紀生活文創</h1>
+            <div class="nav-links">
+                <div class="dropdown">
+                    <button class="dropbtn">設置</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showChangePasswordModal()">變更密碼</a>
+                        <a href="#" onclick="showUploadLogoModal()">上傳公司 Logo</a>
+                    </div>
+                </div>
+                <a href="/view" style="padding: 8px 16px; display: inline-block;">回到品牌頁</a>
+            </div>
         </div>
 
-        <div class="section">
+        <div class="card">
+            <div class="flex-container">
+                <div>
+                    <h3>品牌管理</h3>
+                    <input type="text" id="new_username" placeholder="新品牌名">
+                    <input type="text" id="new_user_id" placeholder="品牌編號">
+                    <input type="password" id="new_password" placeholder="密碼">
+                    <input type="text" id="new_commission" placeholder="抽成百分比（例如：10）">
+                    <button onclick="addUser()">新增品牌</button>
+                </div>
+
+                <div>
+                    <h3>報表上傳</h3>
+                    <select id="upload_username">
+                        <option value="">選擇品牌</option>
+                    </select>
+                    <select id="upload_month">
+                        <option value="">選擇月份</option>
+                    </select>
+                    <input type="file" id="report_file" accept=".xlsx">
+                    <button onclick="uploadReport()">單個上傳報表</button>
+                    <input type="file" id="batch_report_files" accept=".xlsx" multiple>
+                    <button onclick="batchUploadReports()">批量上傳報表</button>
+                </div>
+
+                <div>
+                    <h3>總覽報表</h3>
+                    <button onclick="window.location.href='/admin/summary_page'">查看總覽報表</button>
+                </div>
+            </div>
+
+            <hr>
+
             <h3>品牌列表</h3>
             <ul id="user_list" class="user-list"></ul>
         </div>
+    </div>
 
-        <div class="section">
-            <h3>單個上傳報表</h3>
-            <select id="upload_username">
-                <option value="">選擇品牌</option>
-            </select>
-            <select id="upload_month">
-                <option value="">選擇月份</option>
-            </select>
-            <input type="file" id="report_file" accept=".xlsx">
-            <button onclick="uploadReport()">上傳報表</button>
+    <!-- 模態框 -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <button onclick="closeModal()">關閉</button>
         </div>
-
-        <div class="section">
-            <h3>批量上傳報表</h3>
-            <input type="file" id="batch_report_files" accept=".xlsx" multiple>
-            <button onclick="batchUploadReports()">批量上傳報表</button>
-        </div>
-
-        <div class="section">
-            <h3>變更密碼</h3>
-            <input type="text" id="admin_username" placeholder="管理員用戶名">
-            <input type="password" id="new_admin_password" placeholder="新密碼">
-            <button onclick="changePassword()">變更密碼</button>
-        </div>
-
-        <div class="section">
-            <h3>上傳公司 Logo</h3>
-            <input type="file" id="logo_file" accept=".jpg">
-            <button onclick="uploadLogo()">上傳 Logo</button>
-        </div>
-
-        <div class="section">
-            <h3>總覽報表</h3>
-            <button onclick="window.location.href='/admin/summary_page'">查看總覽報表</button>
-        </div>
-
-        <p><a href="/view">查看品牌頁面</a></p>
-        <p id="message"></p>
-        <div id="error_list" class="error-list"></div>
     </div>
 
     <script>
@@ -183,6 +300,48 @@
         const role = localStorage.getItem('adminRole');
         if (!role) {
             window.location.href = '/admin/login';
+        }
+
+        // 顯示訊息模態框
+        function showMessage(message, type) {
+            console.log('顯示訊息：', message, type);
+            const modal = document.getElementById("messageModal");
+            const modalContent = document.querySelector(".modal-content");
+            const modalMessage = document.getElementById("modalMessage");
+            modalMessage.innerText = message;
+            modalContent.className = "modal-content " + type;
+            modal.style.display = "block";
+        }
+
+        // 關閉模態框
+        function closeModal() {
+            const modal = document.getElementById("messageModal");
+            modal.style.display = "none";
+        }
+
+        // 顯示變更密碼模態框
+        function showChangePasswordModal() {
+            const username = prompt("輸入管理員用戶名：", "");
+            if (username !== null) {
+                const newPassword = prompt("輸入新密碼：", "");
+                if (newPassword !== null) {
+                    changePassword(username, newPassword);
+                }
+            }
+        }
+
+        // 顯示上傳公司 Logo 模態框
+        function showUploadLogoModal() {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = ".jpg";
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    uploadLogo(file);
+                }
+            };
+            input.click();
         }
 
         // 載入品牌列表
@@ -220,16 +379,12 @@
                         });
                     } else {
                         console.log('品牌列表為空或格式錯誤');
-                        const message = document.getElementById("message");
-                        message.className = "error";
-                        message.innerHTML = "品牌列表為空或格式錯誤";
+                        showMessage("品牌列表為空或格式錯誤", "error");
                     }
                 })
                 .catch(error => {
                     console.error('載入品牌列表失敗：', error);
-                    const message = document.getElementById("message");
-                    message.className = "error";
-                    message.innerHTML = "載入品牌列表失敗：" + error.message;
+                    showMessage("載入品牌列表失敗：" + error.message, "error");
                 });
         }
 
@@ -251,7 +406,6 @@
             const userId = document.getElementById("new_user_id").value;
             const password = document.getElementById("new_password").value;
             const commission = document.getElementById("new_commission").value;
-            const message = document.getElementById("message");
 
             fetch('/admin/add_user', {
                 method: 'POST',
@@ -266,11 +420,9 @@
             })
             .then(data => {
                 if (data.error) {
-                    message.className = "error";
-                    message.innerHTML = data.error;
+                    showMessage(data.error, "error");
                 } else {
-                    message.className = "success";
-                    message.innerHTML = data.message;
+                    showMessage(data.message, "success");
                     loadUsers();
                     document.getElementById("new_username").value = "";
                     document.getElementById("new_user_id").value = "";
@@ -279,8 +431,7 @@
                 }
             })
             .catch(error => {
-                message.className = "error";
-                message.innerHTML = "新增品牌失敗：" + error.message;
+                showMessage("新增品牌失敗：" + error.message, "error");
             });
         }
 
@@ -288,7 +439,6 @@
         function editUser(username) {
             const newPassword = prompt("輸入新密碼：", "");
             const newCommission = prompt("輸入新抽成百分比：", "");
-            const message = document.getElementById("message");
 
             if (newPassword !== null && newCommission !== null) {
                 fetch('/admin/edit_user', {
@@ -304,17 +454,14 @@
                 })
                 .then(data => {
                     if (data.error) {
-                        message.className = "error";
-                        message.innerHTML = data.error;
+                        showMessage(data.error, "error");
                     } else {
-                        message.className = "success";
-                        message.innerHTML = data.message;
+                        showMessage(data.message, "success");
                         loadUsers();
                     }
                 })
                 .catch(error => {
-                    message.className = "error";
-                    message.innerHTML = "編輯品牌失敗：" + error.message;
+                    showMessage("編輯品牌失敗：" + error.message, "error");
                 });
             }
         }
@@ -334,20 +481,15 @@
                     return response.json();
                 })
                 .then(data => {
-                    const message = document.getElementById("message");
                     if (data.error) {
-                        message.className = "error";
-                        message.innerHTML = data.error;
+                        showMessage(data.error, "error");
                     } else {
-                        message.className = "success";
-                        message.innerHTML = data.message;
+                        showMessage(data.message, "success");
                         loadUsers();
                     }
                 })
                 .catch(error => {
-                    const message = document.getElementById("message");
-                    message.className = "error";
-                    message.innerHTML = "刪除品牌失敗：" + error.message;
+                    showMessage("刪除品牌失敗：" + error.message, "error");
                 });
             }
         }
@@ -362,11 +504,9 @@
             const username = document.getElementById("upload_username").value;
             const month = document.getElementById("upload_month").value;
             const file = document.getElementById("report_file").files[0];
-            const message = document.getElementById("message");
 
             if (!username || !month || !file) {
-                message.className = "error";
-                message.innerHTML = "請填寫所有欄位並選擇檔案！";
+                showMessage("請填寫所有欄位並選擇檔案！", "error");
                 return;
             }
 
@@ -389,29 +529,23 @@
             .then(data => {
                 console.log('上傳報表數據：', data);
                 if (data.error) {
-                    message.className = "error";
-                    message.innerHTML = data.error;
+                    showMessage(data.error, "error");
                 } else {
-                    message.className = "success";
-                    message.innerHTML = data.message;
+                    showMessage(data.message, "success");
                 }
             })
             .catch(error => {
                 console.error('上傳報表失敗：', error);
-                message.className = "error";
-                message.innerHTML = "上傳報表失敗：" + error.message;
+                showMessage("上傳報表失敗：" + error.message, "error");
             });
         }
 
         // 批量上傳報表
         function batchUploadReports() {
             const files = document.getElementById("batch_report_files").files;
-            const message = document.getElementById("message");
-            const errorList = document.getElementById("error_list");
 
             if (files.length === 0) {
-                message.className = "error";
-                message.innerHTML = "請選擇至少一個檔案！";
+                showMessage("請選擇至少一個檔案！", "error");
                 return;
             }
 
@@ -433,35 +567,27 @@
             })
             .then(data => {
                 console.log('批量上傳報表數據：', data);
-                message.className = "success";
-                message.innerHTML = data.message;
-                errorList.innerHTML = "";
+                let message = data.message;
                 if (data.errors && data.errors.length > 0) {
-                    const ul = document.createElement("ul");
+                    message += "\n\n錯誤詳情：\n";
                     data.errors.forEach(error => {
-                        const li = document.createElement("li");
-                        li.className = "error";
-                        li.textContent = error;
-                        ul.appendChild(li);
+                        message += error + "\n";
                     });
-                    errorList.appendChild(ul);
+                    showMessage(message, "error");
+                } else {
+                    showMessage(message, "success");
                 }
             })
             .catch(error => {
                 console.error('批量上傳報表失敗：', error);
-                message.className = "error";
-                message.innerHTML = "批量上傳報表失敗：" + error.message;
+                showMessage("批量上傳報表失敗：" + error.message, "error");
             });
         }
 
         // 上傳 Logo
-        function uploadLogo() {
-            const file = document.getElementById("logo_file").files[0];
-            const message = document.getElementById("message");
-
+        function uploadLogo(file) {
             if (!file) {
-                message.className = "error";
-                message.innerHTML = "請選擇檔案！";
+                showMessage("請選擇檔案！", "error");
                 return;
             }
 
@@ -482,26 +608,24 @@
             .then(data => {
                 console.log('上傳 Logo 數據：', data);
                 if (data.error) {
-                    message.className = "error";
-                    message.innerHTML = data.error;
+                    showMessage(data.error, "error");
                 } else {
-                    message.className = "success";
-                    message.innerHTML = data.message;
+                    showMessage(data.message, "success");
                     window.location.reload();
                 }
             })
             .catch(error => {
                 console.error('上傳 Logo 失敗：', error);
-                message.className = "error";
-                message.innerHTML = "上傳 Logo 失敗：" + error.message;
+                showMessage("上傳 Logo 失敗：" + error.message, "error");
             });
         }
 
         // 變更密碼
-        function changePassword() {
-            const username = document.getElementById("admin_username").value;
-            const newPassword = document.getElementById("new_admin_password").value;
-            const message = document.getElementById("message");
+        function changePassword(username, newPassword) {
+            if (!username || !newPassword) {
+                showMessage("請填寫所有欄位！", "error");
+                return;
+            }
 
             fetch('/admin/change_password', {
                 method: 'POST',
@@ -516,18 +640,13 @@
             })
             .then(data => {
                 if (data.error) {
-                    message.className = "error";
-                    message.innerHTML = data.error;
+                    showMessage(data.error, "error");
                 } else {
-                    message.className = "success";
-                    message.innerHTML = data.message;
-                    document.getElementById("admin_username").value = "";
-                    document.getElementById("new_admin_password").value = "";
+                    showMessage(data.message, "success");
                 }
             })
             .catch(error => {
-                message.className = "error";
-                message.innerHTML = "變更密碼失敗：" + error.message;
+                showMessage("變更密碼失敗：" + error.message, "error");
             });
         }
 
