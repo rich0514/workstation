@@ -1,0 +1,166 @@
+---
+const { type, scores } = Astro.url.searchParams.get('type') && Astro.url.searchParams.get('scores') 
+  ? { 
+      type: Astro.url.searchParams.get('type'), 
+      scores: JSON.parse(Astro.url.searchParams.get('scores')) 
+    } 
+  : { type: 'INFP', scores: { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 } };
+
+const descriptions = {
+  'INFP': '理想情人',
+  'INFJ': '靈魂靜謐者',
+  'ENFP': '情感探索者',
+  'ENFJ': '靈魂照明者',
+  'INTP': '安靜拆解者',
+  'INTJ': '孤島建築師',
+  'ENTP': '情感辨講家',
+  'ENTJ': '堅定引導者',
+  'ISFP': '沉静的陪伴者',
+  'ISFJ': '溫柔守護者',
+  'ESFP': '熱情生活家',
+  'ESFJ': '溫暖照顧者',
+  'ISTP': '孤獨行者',
+  'ISTJ': '信任守護者',
+  'ESTP': '感官冒險者',
+  'ESTJ': '務實規劃師'
+};
+
+// 檢查 type 和 scores 是否有效
+if (!type || !descriptions[type]) {
+  console.error('無效的 MBTI 類型:', type);
+  throw new Error('無效的 MBTI 類型，請返回測驗重新開始！');
+}
+if (!scores) {
+  console.error('分數數據缺失:', scores);
+  throw new Error('分數數據缺失，請返回測驗重新開始！');
+}
+---
+
+<html lang="zh-TW">
+  <head>
+    <meta charset="utf-8" />
+    <title>MBTI 測驗 - 結果</title>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=ZCOOL+XiaoWei&display=swap" />
+    <style>
+      body { 
+        background: #F8F1E9; 
+        font-family: 'Noto Sans TC', sans-serif; 
+        margin: 0; 
+      }
+      h1 { 
+        font-family: 'ZCOOL XiaoWei', serif; 
+        color: #3A4F41; 
+      }
+      p { 
+        color: #3A4F41; 
+      }
+      .container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        width: 300px;
+        min-height: 200px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .result-text {
+        font-size: 18px;
+        color: #3A4F41;
+        text-align: center;
+        line-height: 1.6;
+        margin-bottom: 16px;
+      }
+
+      .greeting {
+        font-size: 15px;
+        color: #3A4F41;
+        text-align: center;
+        margin-bottom: 8px;
+      }
+
+      .result-type {
+        font-size: 30px;
+        font-weight: bold;
+        color: #3A4F41;
+        text-align: center;
+        margin-bottom: 16px;
+        font-family: 'ZCOOL XiaoWei', serif; /* 套用 ZCOOL XiaoWei 字型 */
+      }
+
+      .result-title {
+        font-size: 30px;
+        font-weight: bold;
+        color: #3A4F41;
+        text-align: center;
+        margin-bottom: 16px;
+        font-family: 'ZCOOL XiaoWei', serif; /* 套用 ZCOOL XiaoWei 字型 */
+      }
+
+      .button-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        max-width: 400px;
+        margin-top: 24px;
+      }
+
+      .result-btn {
+        background: #A8B5A2;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 9999px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+        font-family: 'Noto Sans TC', sans-serif;
+        text-decoration: none;
+        display: inline-block;
+        min-width: 200px;
+        text-align: center;
+      }
+
+      .result-btn:hover {
+        background: #8A9A85;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <div class="card">
+        <div class="result-text">測驗結果</div>
+        <div class="greeting">你是</div>
+        <div class="result-type">{type}</div>
+        <div class="result-title">{descriptions[type]}</div>
+      </div>
+      <div class="button-group">
+        <a href="https://www.instagram.com/creating_.for_.life/" target="_blank" class="result-btn">分析結果</a>
+        <a href="/" class="result-btn">再測一次</a>
+      </div>
+    </main>
+    <script>
+      console.log('結果頁面載入成功');
+      console.log('MBTI 類型:', new URLSearchParams(window.location.search).get('type'));
+      console.log('分數:', new URLSearchParams(window.location.search).get('scores'));
+    </script>
+  </body>
+</html>

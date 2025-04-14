@@ -1,0 +1,345 @@
+---
+---
+<html lang="zh-TW">
+  <head>
+    <meta charset="utf-8" />
+    <title>MBTI 測驗 - 探索內心</title>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=ZCOOL+XiaoWei&display=swap" />
+    <style>
+      body { 
+        background: #F8F1E9 !important; 
+        font-family: 'Noto Sans TC', sans-serif !important; 
+        margin: 0 !important; 
+      }
+      h1 { 
+        font-family: 'ZCOOL XiaoWei', serif !important; 
+        color: #3A4F41 !important; 
+      }
+      p { 
+        color: #3A4F41 !important; 
+      }
+      .container {
+        min-height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 16px !important;
+        max-width: 600px !important;
+        margin: 0 auto !important;
+      }
+
+      .progress-container {
+        width: 100% !important;
+        max-width: 400px !important;
+        margin-bottom: 24px !important;
+      }
+
+      .progress-bar { 
+        height: 8px !important; 
+        background: #D8E0D5 !important; 
+        border-radius: 9999px !important; 
+        overflow: hidden !important;
+      }
+
+      .progress-fill { 
+        height: 100% !important; 
+        width: 0 !important;
+        background: #A8B5A2 !important; 
+        transition: width 0.5s ease !important;
+      }
+
+      .question-number {
+        color: #3A4F41 !important;
+        margin-bottom: 16px !important;
+        font-size: 16px !important;
+      }
+
+      .card {
+        background: white !important;
+        border-radius: 16px !important;
+        padding: 24px !important;
+        width: 300px !important;
+        min-height: 200px !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+        margin-bottom: 24px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+      }
+
+      .question-text, .result-text {
+        font-size: 18px !important;
+        color: #3A4F41 !important;
+        text-align: center !important;
+        line-height: 1.6 !important;
+        margin: 0 !important;
+        padding: 0 16px !important;
+        margin-bottom: 16px !important;
+      }
+
+      .greeting {
+        font-size: 15px !important; /* 從 10px 改為 15px */
+        color: #3A4F41 !important;
+        text-align: center !important;
+        margin-bottom: 8px !important;
+      }
+
+      .result-type {
+        font-size: 30px !important; /* 從 15px 改為 30px */
+        font-weight: bold !important;
+        color: #3A4F41 !important;
+        text-align: center !important;
+        margin-bottom: 16px !important;
+        font-family: 'ZCOOL XiaoWei', serif !important;
+      }
+
+      .result-title {
+        font-size: 30px !important; /* 從 15px 改為 30px */
+        font-weight: bold !important;
+        color: #3A4F41 !important;
+        text-align: center !important;
+        margin-bottom: 16px !important;
+        font-family: 'ZCOOL XiaoWei', serif !important;
+      }
+
+      .options, .button-group {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 12px !important;
+        width: 100% !important;
+        max-width: 400px !important;
+        margin-top: 24px !important;
+      }
+
+      .option-btn, .result-btn {
+        background: #A8B5A2 !important;
+        color: white !important;
+        padding: 12px 24px !important;
+        border: none !important;
+        border-radius: 9999px !important;
+        cursor: pointer !important;
+        font-size: 16px !important;
+        transition: background-color 0.3s ease !important;
+        font-family: 'Noto Sans TC', sans-serif !important;
+        text-decoration: none !important;
+        display: inline-block !important;
+        min-width: 200px !important;
+        text-align: center !important;
+      }
+
+      .option-btn:hover, .result-btn:hover {
+        background: #8A9A85 !important;
+      }
+
+      .option-btn:active {
+        transform: scale(0.98) !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <div class="progress-container" id="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-bar" style="width: 0;"></div>
+        </div>
+      </div>
+      <div class="question-number" id="question-number">第 <span id="question-number-text">1</span>/20 題</div>
+      <div class="card" id="quiz-card">
+        <div id="question" class="question-text"></div>
+      </div>
+      <div id="options" class="options">
+        <div>
+          <a href="javascript:void(0)" class="option-btn" data-score="2">同意</a>
+        </div>
+        <div>
+          <a href="javascript:void(0)" class="option-btn" data-score="1">還好</a>
+        </div>
+        <div>
+          <a href="javascript:void(0)" class="option-btn" data-score="0">不同意</a>
+        </div>
+      </div>
+    </main>
+    <script>
+      const questions = [
+        { id: 1, text: "我喜歡把心事說出來，即使只是讓對方知道我的存在。", positive: "E", negative: "I", positiveText: "我需要表達來療癒自己", negativeText: "我喜歡把心事藏在心裡" },
+        { id: 2, text: "我很在意別人細微的情緒變化，甚至有點過頭。", positive: "N", negative: "S", positiveText: "我常感受到微妙變化", negativeText: "我比較在意實際表現" },
+        { id: 3, text: "我常常在關係中扮演傾聽者的角色。", positive: "F", negative: "T", positiveText: "我願意成為情感支柱", negativeText: "我傾向給出解決方案" },
+        { id: 4, text: "若沒有提前安排，我會對突然的邀約感到焦慮。", positive: "J", negative: "P", positiveText: "我需要確定的計畫", negativeText: "我享受即興的邀約" },
+        { id: 5, text: "跟朋友一起沉默也不會尷尬，那種安靜是舒服的。", positive: "I", negative: "E", positiveText: "我享受安靜的陪伴", negativeText: "我喜歡熱鬧的交流" },
+        { id: 6, text: "我相信第六感，總能感受到氣氛的改變。", positive: "N", negative: "S", positiveText: "我相信直覺感受", negativeText: "我相信具體事實" },
+        { id: 7, text: "我會因為他人一句話而思考一整晚。", positive: "F", negative: "T", positiveText: "我容易被話語觸動", negativeText: "我理性分析對話" },
+        { id: 8, text: "關係的節奏如果太快，我會想逃開。", positive: "P", negative: "J", positiveText: "我需要自己的節奏", negativeText: "我喜歡穩定發展" },
+        { id: 9, text: "跟陌生人交談時，我通常能自然而然開啟話題。", positive: "E", negative: "I", positiveText: "我善於開啟對話", negativeText: "我傾向安靜觀察" },
+        { id: 10, text: "我經常觀察朋友的一舉一動，像寫詩一樣記錄心情。", positive: "N", negative: "S", positiveText: "我喜歡解讀意義", negativeText: "我注重實際互動" },
+        { id: 11, text: "情緒連結對我來說，比解決問題還重要。", positive: "F", negative: "T", positiveText: "我重視情感交流", negativeText: "我重視解決方案" },
+        { id: 12, text: "我喜歡清楚知道接下來一週會發生什麼事。", positive: "J", negative: "P", positiveText: "我喜歡規劃未來", negativeText: "我享受即興生活" },
+        { id: 13, text: "一場熱烈的對話能讓我感覺被充電。", positive: "E", negative: "I", positiveText: "我從交談獲得能量", negativeText: "對話會消耗我的精力" },
+        { id: 14, text: "我常覺得自己的直覺比邏輯更可靠。", positive: "N", negative: "S", positiveText: "我信任內在直覺", negativeText: "我相信實際經驗" },
+        { id: 15, text: "感情裡的距離感，會讓我不安。", positive: "F", negative: "T", positiveText: "我需要情感親密", negativeText: "我重視個人空間" },
+        { id: 16, text: "我會計畫情人節要送什麼、去哪裏吃飯。", positive: "J", negative: "P", positiveText: "我喜歡規劃浪漫", negativeText: "我享受即興約會" },
+        { id: 17, text: "對我而言，「安靜地陪著」是最深的陪伴方式。", positive: "I", negative: "E", positiveText: "我享受靜默陪伴", negativeText: "我喜歡互動交流" },
+        { id: 18, text: "我喜歡幻想別人的故事，再默默為他寫一首詩。", positive: "N", negative: "S", positiveText: "我愛想像創作", negativeText: "我專注當下實際" },
+        { id: 19, text: "我會努力讓對方知道他是被理解、被支持的。", positive: "F", negative: "T", positiveText: "我重視情感支持", negativeText: "我提供實際幫助" },
+        { id: 20, text: "若計畫被打亂，我會感到失控。", positive: "J", negative: "P", positiveText: "我需要按計劃進行", negativeText: "我能靈活應變" }
+      ];
+
+      let currentQuestionIndex = 0;
+      const answers = [];
+      const scores = {
+        E: 0, I: 0,
+        S: 0, N: 0,
+        T: 0, F: 0,
+        J: 0, P: 0
+      };
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const questionElement = document.getElementById('question');
+        const questionNumber = document.getElementById('question-number-text');
+        const progressBar = document.getElementById('progress-bar');
+        const optionsContainer = document.getElementById('options');
+
+        if (!questionElement || !questionNumber || !progressBar || !optionsContainer) {
+          console.error('找不到必要的元素');
+          return;
+        }
+
+        function updateQuestion() {
+          const question = questions[currentQuestionIndex];
+          questionElement.textContent = question.text;
+          questionNumber.textContent = (currentQuestionIndex + 1).toString();
+          progressBar.style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
+        }
+
+        function handleAnswer(score) {
+          if (currentQuestionIndex < questions.length) {
+            answers[currentQuestionIndex] = score;
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex === questions.length) {
+              questionElement.textContent = '正在計算結果...';
+              optionsContainer.innerHTML = '';
+              setTimeout(() => {
+                calculateResult();
+              }, 1000);
+            } else {
+              updateQuestion();
+            }
+          }
+        }
+
+        const optionButtons = optionsContainer.querySelectorAll('.option-btn');
+        optionButtons.forEach((button) => {
+          button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const score = parseInt(button.dataset.score || '0');
+            handleAnswer(score);
+          });
+        });
+
+        updateQuestion();
+      });
+
+      function calculateResult() {
+        Object.keys(scores).forEach(key => {
+          scores[key] = 0;
+        });
+
+        answers.forEach((answer, index) => {
+          const question = questions[index];
+          if (answer === 2) {
+            scores[question.positive] += 2;
+          } else if (answer === 1) {
+            scores[question.positive] += 1;
+            scores[question.negative] += 1;
+          } else {
+            scores[question.negative] += 2;
+          }
+        });
+
+        const comparisons = [
+          { score1: scores.E, score2: scores.I, letter1: 'E', letter2: 'I' },
+          { score1: scores.S, score2: scores.N, letter1: 'S', letter2: 'N' },
+          { score1: scores.T, score2: scores.F, letter1: 'T', letter2: 'F' },
+          { score1: scores.J, score2: scores.P, letter1: 'J', letter2: 'P' }
+        ];
+
+        const finalType = comparisons.map(({ score1, score2, letter1, letter2 }) => {
+          return score1 >= score2 ? letter1 : letter2;
+        }).join('');
+
+        console.log('MBTI 類型:', finalType);
+        console.log('分數:', scores);
+
+        const descriptions = {
+          'INFP': '理想情人',
+          'INFJ': '靈魂靜謐者',
+          'ENFP': '情感探索者',
+          'ENFJ': '靈魂照明者',
+          'INTP': '安靜拆解者',
+          'INTJ': '孤島建築師',
+          'ENTP': '情感辨講家',
+          'ENTJ': '堅定引導者',
+          'ISFP': '沉静的陪伴者',
+          'ISFJ': '溫柔守護者',
+          'ESFP': '熱情生活家',
+          'ESFJ': '溫暖照顧者',
+          'ISTP': '孤獨行者',
+          'ISTJ': '信任守護者',
+          'ESTP': '感官冒險者',
+          'ESTJ': '務實規劃師'
+        };
+
+        const progressContainer = document.getElementById('progress-container');
+        const questionNumber = document.getElementById('question-number');
+        const quizCard = document.getElementById('quiz-card');
+        const optionsContainer = document.getElementById('options');
+
+        if (progressContainer) progressContainer.style.display = 'none';
+        if (questionNumber) questionNumber.style.display = 'none';
+
+        if (quizCard && optionsContainer) {
+          quizCard.style.background = 'white';
+          quizCard.style.borderRadius = '16px';
+          quizCard.style.padding = '24px';
+          quizCard.style.width = '300px';
+          quizCard.style.minHeight = '200px';
+          quizCard.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+          quizCard.style.marginBottom = '24px';
+          quizCard.style.display = 'flex';
+          quizCard.style.flexDirection = 'column';
+          quizCard.style.justifyContent = 'center';
+          quizCard.style.alignItems = 'center';
+
+          quizCard.innerHTML = `
+            <div class="result-text">測驗結果</div>
+            <div class="greeting" style="font-size: 15px; color: #3A4F41; text-align: center; margin-bottom: 8px;">你是</div>
+            <div class="result-type" style="font-size: 30px; font-weight: bold; color: #3A4F41; text-align: center; margin-bottom: 16px; font-family: 'ZCOOL XiaoWei', serif;">${finalType}</div>
+            <div class="result-title" style="font-size: 30px; font-weight: bold; color: #3A4F41; text-align: center; margin-bottom: 16px; font-family: 'ZCOOL XiaoWei', serif;">${descriptions[finalType]}</div>
+          `;
+
+          optionsContainer.className = 'button-group';
+          optionsContainer.style.display = 'flex';
+          optionsContainer.style.flexDirection = 'column';
+          optionsContainer.style.alignItems = 'center';
+          optionsContainer.style.gap = '12px';
+          optionsContainer.style.width = '100%';
+          optionsContainer.style.maxWidth = '400px';
+          optionsContainer.style.marginTop = '24px';
+
+          optionsContainer.innerHTML = `
+            <a href="https://www.instagram.com/creating_.for_.life/" target="_blank" class="result-btn" style="background: #A8B5A2; color: white; padding: 12px 24px; border-radius: 9999px; text-decoration: none; min-width: 200px; text-align: center; font-family: 'Noto Sans TC', sans-serif; font-size: 16px;">分析結果</a>
+            <a href="/" class="result-btn" style="background: #A8B5A2; color: white; padding: 12px 24px; border-radius: 9999px; text-decoration: none; min-width: 200px; text-align: center; font-family: 'Noto Sans TC', sans-serif; font-size: 16px;">再測一次</a>
+          `;
+        } else {
+          console.error('找不到 quiz-card 或 options 元素');
+        }
+
+        console.log('結果頁面已生成:', finalType, descriptions[finalType]);
+      }
+    </script>
+  </body>
+</html>
