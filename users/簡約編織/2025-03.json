@@ -1,0 +1,15 @@
+{
+    "data": [
+        {
+            "項目": "簡約編織手環",
+            "SKU": "簡約編織",
+            "銷售額": 276.0,
+            "數量": 2
+        }
+    ],
+    "total_sales": 276.0,
+    "total_quantity": 2,
+    "commission_rate": 30.0,
+    "commission": 82.8,
+    "net_amount": 193.2
+}

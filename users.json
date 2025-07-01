@@ -1,0 +1,109 @@
+{
+    "安妮醬": {
+        "user_id": "002",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$M7DemX20dg2bvWqjexPt6A$AoCk2BYH6sQrk0kPvKN5BnSkcS4MXfVVz+F5nCiNbmU",
+        "commission": 10.0
+    },
+    "暖羊": {
+        "user_id": "006",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$4hNnRLBsqDiIlwKvDXoQow$AhABfmuqgbg8B5d1J/g9dRJbr0Rof0jAXdHq+T7AfnA",
+        "commission": 10.0
+    },
+    "鴨肉畫字": {
+        "user_id": "016",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$/DltMnS+9jLEHNZ/+w1Ceg$HPAzXOH1P0mEFHDCeTPedzqCPHCwdGxB+L7LxhbXH0s",
+        "commission": 10.0,
+        "hidden": true
+    },
+    "POM": {
+        "user_id": "058",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$dKO1fQBRZON3/6Afd0aO+Q$fmoRjO4YPab3o8XG+JYtgMETtLwewbHwfQHSx9uUZtc",
+        "commission": 10.0
+    },
+    "來點動物": {
+        "user_id": "2005",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$twbIhbFJpbyrgMinyXFV9w$KozRTG2T0BFyDx2aY72wPKtGmzMOh8HzmkLDarjnV60",
+        "commission": 30.0
+    },
+    "灰黑集白": {
+        "user_id": "088",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$CbzqSFOgb5uBaB6Y91lhyw$QMrxrJx0pFvugNX/9gvtIDTgphIXYpl3V+LMYA6KR7E",
+        "commission": 30.0
+    },
+    "Mi Stile": {
+        "user_id": "081",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$xD+KWJrJLzkTTcefclP9nA$PpkBS0XzE9DbwTkNiIyRvdg4kkOJLd8yLR8AuDkUN6c",
+        "commission": 10.0,
+        "hidden": false
+    },
+    "脈脈": {
+        "user_id": "078",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$Qk0SiO2tvKCaxnnWOLYdDw$UcQTGpisloP20YhoVrwzJrJ79HuqDbP9TW2pNyY+8l4",
+        "commission": 10.0,
+        "hidden": true
+    },
+    "好築藝": {
+        "user_id": "077",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$fl/cD5dOqlcmfzNV4MF8SA$mCD8rJaq4EZ6AvwKpeOnSr+s/Iq0/hO+IvaRXuL9D74",
+        "commission": 30.0
+    },
+    "月半糰子": {
+        "user_id": "070",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$ddWP0jxsbTXA5y3eUGWDmg$rs7+Tjvhvu/R4adosBiIXVx6Xz9F+dFhOISe5rGkhbE",
+        "commission": 10.0
+    },
+    "弍榯槭": {
+        "user_id": "046",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$W4yFffFANQb2jKTIPrEuug$1IXOscg3vqL6iMp+JvIZIDlw8ke/5u1hU7jY0BZmgQM",
+        "commission": 30.0
+    },
+    "簡約編織": {
+        "user_id": "025",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$moBbB5xaYv3EgNAmUIpsdA$5AoKI7/2NK8MrUUTR6EegYQ+UGrU1zwJTRQHDwwujDs",
+        "commission": 30.0
+    },
+    "小潑珠串": {
+        "user_id": "024",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$ybmYfliwUV+2N2vReRqwkw$na8xdKcIDbd0xZI6zIANP2iR3rO8tswIcaLN8HNvDl4",
+        "commission": 10.0,
+        "hidden": false
+    },
+    "Yuye語頁": {
+        "user_id": "023",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$+hcy7CYYIzSw5Cnt5zSgAA$dzS0iVJwmP5W/ByjeOls4DP1CZS54LROOsZIjnVDVZE",
+        "commission": 10.0,
+        "hidden": true
+    },
+    "殊遇花藝": {
+        "user_id": "022",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$3DloW0lijqkCN+kOUZ6F8g$dXeCW4K0Me6oSS/ej0Ai8ntDCNunR0QGKjsIbnlDL38",
+        "commission": 10.0
+    },
+    "1B H5手工寵物領巾": {
+        "user_id": "013",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$6+NFuS7SkmIHbN3HVJsjbQ$cc0QNi+zBDQzoc3l1nN2tcxqTeI4PctOEXGh1ilokIw",
+        "commission": 10.0,
+        "hidden": true
+    },
+    "5Centimeters": {
+        "user_id": "011",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$kIBcCrqzKs2bRCXZSKijRQ$scxZv3vyko9DXPh+vWTbXJd5cE0e0uRLCv094CzsvLo",
+        "commission": 10.0,
+        "hidden": true
+    },
+    "Coisini": {
+        "user_id": "066",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$WR/C2++QmVKW20vM+oTWNw$IvqZpgRs2jOG4WhGLfJvzP0AILT1jcOTyihErzO6FhQ",
+        "commission": 10.0
+    },
+    "創似紀生活文創": {
+        "user_id": "001",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$gUCxLJjoUo/J0RgQANZJXQ$O4cn8pqUoK9eoB/5MfLJqBmI38YwTWfRhL79CTLdg4o",
+        "commission": 30.0
+    },
+    "月下戀人": {
+        "user_id": "014",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$4QGz/wCwf5QSxFXr3fIucw$JxU33XsBP8HRwsQEz0JUgtOcxSqh5rkmpXkF966Kicg",
+        "commission": 30.0
+    }
+}

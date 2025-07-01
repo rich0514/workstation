@@ -1,0 +1,6 @@
+flask 
+gunicorn 
+python-dateutil 
+pandas 
+openpyxl 
+argon2-cffi

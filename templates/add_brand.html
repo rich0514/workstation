@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>新增品牌 - 創似紀生活文創</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', Arial, sans-serif;
+      background-color: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .form-container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 {
+      color: #ff66a3;
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+    input[type="text"], input[type="password"] {
+      width: 80%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid #ff66a3;
+      border-radius: 10px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:hover, input[type="password"]:hover {
+      border-color: #ff99c2;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #ff66a3;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-size: 1em;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #ff99c2;
+    }
+    .message {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    a {
+      text-decoration: none;
+      color: #ff66a3;
+      margin-top: 20px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>新增品牌</h1>
+    <input type="text" id="brand_username" placeholder="品牌名稱" required>
+    <input type="text" id="brand_user_id" placeholder="品牌編號" required>
+    <input type="password" id="brand_password" placeholder="密碼" required>
+    <input type="text" id="brand_commission" placeholder="抽成百分比（例如：10）" required>
+    <button onclick="submitBrand()">送出</button>
+    <div class="message" id="msg"></div>
+    <a href="/admin">返回管理頁面</a>
+  </div>
+
+  <script>
+    function submitBrand() {
+      const username = document.getElementById("brand_username").value.trim();
+      const userId = document.getElementById("brand_user_id").value.trim();
+      const password = document.getElementById("brand_password").value.trim();
+      const commission = document.getElementById("brand_commission").value.trim();
+      const msgEl = document.getElementById("msg");
+
+      if (!username || !userId || !password || !commission) {
+        msgEl.textContent = "請填寫所有欄位！";
+        msgEl.style.color = "red";
+        return;
+      }
+
+      fetch('/admin/add_user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, user_id: userId, password, commission })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('新增品牌失敗');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.error) {
+          msgEl.textContent = data.error;
+          msgEl.style.color = "red";
+        } else {
+          msgEl.textContent = data.message;
+          msgEl.style.color = "green";
+          setTimeout(() => {
+            window.location.href = '/admin';
+          }, 2000);
+        }
+      })
+      .catch(error => {
+        msgEl.textContent = "新增品牌失敗：" + error.message;
+        msgEl.style.color = "red";
+      });
+    }
+  </script>
+</body>
+</html>

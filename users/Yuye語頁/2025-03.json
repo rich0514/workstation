@@ -1,0 +1,21 @@
+{
+    "data": [
+        {
+            "項目": "貓掌橙月光E17",
+            "SKU": "Yuye語頁",
+            "銷售額": 580.0,
+            "數量": 2
+        },
+        {
+            "項目": "隨行編織水晶手鍊E2",
+            "SKU": "Yuye語頁",
+            "銷售額": 980.0,
+            "數量": 2
+        }
+    ],
+    "total_sales": 1560.0,
+    "total_quantity": 4,
+    "commission_rate": 10.0,
+    "commission": 156.0,
+    "net_amount": 1404.0
+}

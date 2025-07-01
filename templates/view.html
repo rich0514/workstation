@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>品牌頁面 - 創似紀生活文創</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1, h3 {
+            color: #ff69b4;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eee;
+            text-align: center;
+        }
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+        }
+        .card .flex-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 20px;
+        }
+        .card .flex-container > div {
+            flex: 1;
+            min-width: 300px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+        .grid-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .grid-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .grid-item span {
+            font-size: 1.1em;
+            color: #333;
+        }
+        input[type="text"], input[type="password"], select {
+            width: 100%;
+            max-width: 300px;
+            padding: 10px;
+            margin: 10px auto;
+            display: block;
+            border: 2px solid #ff69b4;
+            border-radius: 8px;
+            font-family: 'Noto Sans TC', Arial, sans-serif;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:hover, input[type="password"]:hover, select:hover {
+            border-color: #ff85c0;
+        }
+        button {
+            padding: 12px 24px;
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.1s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin: 10px auto;
+            display: block;
+        }
+        button:hover {
+            background-color: #ff85c0;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        a {
+            color: #ff69b4;
+            text-decoration: none;
+            font-size: 1em;
+            transition: color 0.3s;
+        }
+        a:hover {
+            color: #ff85c0;
+        }
+        .header {
+            position: relative;
+            text-align: center;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .header .nav-links {
+            position: absolute;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        hr {
+            border: 0;
+            border-top: 1px solid #ddd;
+            margin: 20px 0;
+        }
+        /* 模態框樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: #fff;
+            width: 400px;
+            max-width: 90%;
+            margin: 100px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .modal-content p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        .modal-content.error p {
+            color: #e74c3c;
+        }
+        .modal-content.success p {
+            color: #2ecc71;
+        }
+        .modal-content button {
+            margin: 10px auto;
+            padding: 10px 20px;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>創似紀生活文創</h1>
+            <div class="nav-links">
+                <a href="/admin" style="padding: 8px 16px; display: inline-block;">管理頁面</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="flex-container">
+                <div>
+                    <h3>品牌驗證</h3>
+                    <select id="username">
+                        <option value="">選擇品牌</option>
+                    </select>
+                    <input type="password" id="password" placeholder="密碼">
+                    <button onclick="verifyUser()">驗證</button>
+                </div>
+
+                <div>
+                    <h3>報表查看</h3>
+                    <button onclick="viewReports()">查看報表</button>
+                </div>
+            </div>
+
+            <hr>
+
+            <h3>品牌列表</h3>
+            <div id="user_grid" class="grid-container"></div>
+        </div>
+    </div>
+
+    <!-- 模態框 -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <button onclick="closeModal()">關閉</button>
+        </div>
+    </div>
+
+    <script>
+        // 顯示訊息模態框
+        function showMessage(message, type) {
+            console.log('顯示訊息：', message, type);
+            const modal = document.getElementById("messageModal");
+            const modalContent = document.querySelector(".modal-content");
+            const modalMessage = document.getElementById("modalMessage");
+            modalMessage.innerText = message;
+            modalContent.className = "modal-content " + type;
+            modal.style.display = "block";
+        }
+
+        // 關閉模態框
+        function closeModal() {
+            const modal = document.getElementById("messageModal");
+            modal.style.display = "none";
+        }
+
+        // 載入品牌列表
+        function loadUsers() {
+            fetch('/view/users')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('無法載入品牌列表');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('收到品牌列表數據：', data);
+                    const userGrid = document.getElementById("user_grid");
+                    const usernameSelect = document.getElementById("username");
+                    userGrid.innerHTML = "";
+                    usernameSelect.innerHTML = '<option value="">選擇品牌</option>';
+                    if (data.users && Array.isArray(data.users)) {
+                        data.users.forEach(user => {
+                            console.log('處理品牌：', user);
+                            const gridItem = document.createElement("div");
+                            gridItem.className = "grid-item";
+                            gridItem.innerHTML = `
+                                <span>${user.username} (ID: ${user.user_id})</span>
+                            `;
+                            userGrid.appendChild(gridItem);
+                            const option = document.createElement("option");
+                            option.value = user.username;
+                            option.text = user.username;
+                            usernameSelect.appendChild(option);
+                        });
+                    } else {
+                        console.log('品牌列表為空或格式錯誤');
+                        showMessage("品牌列表為空或格式錯誤", "error");
+                    }
+                })
+                .catch(error => {
+                    console.error('載入品牌列表失敗：', error);
+                    showMessage("載入品牌列表失敗：" + error.message, "error");
+                });
+        }
+
+        // 驗證品牌
+        function verifyUser() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (!username || !password) {
+                showMessage("請填寫所有欄位！", "error");
+                return;
+            }
+
+            fetch('/view/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('驗證失敗');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    showMessage(data.error, "error");
+                } else {
+                    showMessage("驗證成功！", "success");
+                    setTimeout(viewReports, 1000);
+                }
+            })
+            .catch(error => {
+                showMessage("驗證失敗：" + error.message, "error");
+            });
+        }
+
+        // 查看報表
+        function viewReports() {
+            const username = document.getElementById("username").value;
+            if (!username) {
+                showMessage("請選擇品牌！", "error");
+                return;
+            }
+            window.location.href = `/view/reports/${username}`;
+        }
+
+        // 頁面載入時執行
+        window.onload = function() {
+            loadUsers();
+
+            // 為密碼輸入框添加 Enter 鍵事件
+            const passwordInput = document.getElementById("password");
+            passwordInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // 防止表單提交（如果有表單）
+                    verifyUser(); // 觸發驗證
+                }
+            });
+        };
+    </script>
+</body>
+</html>

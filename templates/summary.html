@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>總覽報表 - 創似紀生活文創</title>
+  <!-- 引入 Google 字型 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <style>
+    body {
+      font-family: 'Noto Sans TC', 'Comic Sans MS', Arial, sans-serif;
+      background-color: #FFF0F5; /* 淡粉背景 */
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px 30px;
+      background-color: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1, h2, h3 {
+      color: #FF69B4;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.8em;
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-size: 1.8em;
+      margin-bottom: 20px;
+    }
+    .filter-section {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filter-section label {
+      margin-right: 10px;
+      color: #FF69B4;
+      font-weight: bold;
+    }
+    .filter-section select, .filter-section button {
+      margin: 5px 10px;
+      padding: 8px 12px;
+      border: 2px solid #FF69B4;
+      border-radius: 5px;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 1em;
+      background-color: #FFF0F5;
+      transition: border-color 0.3s;
+    }
+    .filter-section select:hover, .filter-section button:hover {
+      border-color: #FF85C0;
+    }
+    .loading {
+      color: #FF69B4;
+      font-style: italic;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #FFF0F5;
+      border: 2px solid #FF69B4;
+    }
+    th, td {
+      border: 1px solid #FF69B4;
+      padding: 12px;
+      text-align: center;
+      font-size: 1em;
+    }
+    th {
+      background-color: #FFE4E1;
+      color: #FF69B4;
+      font-weight: bold;
+    }
+    td {
+      background-color: #FFF0F5;
+    }
+    a {
+      color: #FF69B4;
+      text-decoration: none;
+      font-size: 1.1em;
+    }
+    a:hover {
+      color: #FF85C0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>創似紀生活文創</h1>
+    <h2>總覽報表</h2>
+    
+    <div class="filter-section">
+      <label for="brandFilter">品牌：</label>
+      <select id="brandFilter">
+        <option value="">所有品牌</option>
+        <!-- 動態填充品牌選項 -->
+      </select>
+      <label for="monthFilter">月份：</label>
+      <select id="monthFilter" style="width: 50%;">
+        <option value="">所有月份</option>
+        <!-- 動態填充月份選項 -->
+      </select>
+      <button id="applyFilter">應用篩選</button>
+      <button id="exportExcel">匯出為 Excel</button>
+    </div>
+    
+    <div id="loadingMessage" class="loading"></div>
+    
+    <table id="summaryTable">
+      <thead>
+        <tr>
+          <th>品牌名稱</th>
+          <th>月份</th>
+          <th>總銷售額</th>
+          <th>總數量</th>
+          <th>抽成 (%)</th>
+          <th>總抽成</th>
+          <th>總實匯金額</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>總計</th>
+          <th>-</th>
+          <th id="totalSales"></th>
+          <th id="totalQuantity"></th>
+          <th>-</th>
+          <th id="totalCommission"></th>
+          <th id="totalNetAmount"></th>
+        </tr>
+      </tfoot>
+    </table>
+    
+    <div id="errorMessage" class="error"></div>
+    <p><a href="/admin">返回管理頁面</a></p>
+  </div>
+  
+  <script>
+    // 檢查管理員權限
+    const role = localStorage.getItem('adminRole');
+    if (!role) {
+      window.location.href = '/admin/login';
+    }
+  
+    // 初始化 DataTables
+    const table = $('#summaryTable').DataTable({
+      "order": [[2, "desc"]],
+      "language": {
+        "emptyTable": "表格中沒有資料",
+        "info": "顯示第 _START_ 至 _END_ 筆資料，共 _TOTAL_ 筆",
+        "infoEmpty": "顯示第 0 至 0 筆資料，共 0 筆",
+        "infoFiltered": "(從 _MAX_ 筆資料中過濾)",
+        "lengthMenu": "每頁顯示 _MENU_ 筆資料",
+        "loadingRecords": "載入中...",
+        "processing": "處理中...",
+        "search": "搜尋：",
+        "zeroRecords": "沒有找到符合的資料",
+        "paginate": {
+          "first": "第一頁",
+          "last": "最後一頁",
+          "next": "下一頁",
+          "previous": "上一頁"
+        }
+      }
+    });
+  
+    let allSummaryData = [];
+    let allBrands = new Set();
+    let allMonths = new Set();
+  
+    // 載入總覽報表
+    function loadSummary(brandFilter = '', monthFilter = '') {
+      const loadingMessage = $('#loadingMessage');
+      const errorMessage = $('#errorMessage');
+      loadingMessage.text('報表載入中...');
+      errorMessage.text('');
+  
+      $.ajax({
+        url: '/admin/summary',
+        method: 'GET',
+        data: { brand: brandFilter, month: monthFilter },
+        success: function(data) {
+          loadingMessage.text('');
+          if (data.error) {
+            errorMessage.text(data.error);
+            return;
+          }
+          allSummaryData = data.summary;
+          table.clear();
+  
+          // 填充篩選選項（第一次載入時）
+          if (!allBrands.size) {
+            allSummaryData.forEach(item => {
+              allBrands.add(item.username);
+              allMonths.add(item.month);
+            });
+            const brandFilterSelect = $('#brandFilter');
+            const monthFilterSelect = $('#monthFilter');
+            allBrands.forEach(brand => {
+              brandFilterSelect.append(`<option value="${brand}">${brand}</option>`);
+            });
+            allMonths.forEach(month => {
+              monthFilterSelect.append(`<option value="${month}">${month}</option>`);
+            });
+          }
+  
+          // 渲染報表資料
+          allSummaryData.forEach(item => {
+            table.row.add([
+              item.username,
+              item.month,
+              item.total_sales.toFixed(1),
+              item.total_quantity,
+              item.commission_rate.toFixed(1),
+              item.commission.toFixed(1),
+              item.net_amount.toFixed(1)
+            ]);
+          });
+          table.draw();
+  
+          // 更新總計
+          $('#totalSales').text(data.totals.total_sales.toFixed(1));
+          $('#totalQuantity').text(data.totals.total_quantity);
+          $('#totalCommission').text(data.totals.total_commission.toFixed(1));
+          $('#totalNetAmount').text(data.totals.total_net_amount.toFixed(1));
+  
+          errorMessage.text('報表載入成功！').removeClass('error').addClass('success');
+        },
+        error: function(xhr, status, error) {
+          loadingMessage.text('');
+          errorMessage.text('無法載入總覽報表：' + error);
+        }
+      });
+    }
+  
+    // 篩選按鈕
+    $('#applyFilter').on('click', function() {
+      const brandFilter = $('#brandFilter').val();
+      const monthFilter = $('#monthFilter').val();
+      loadSummary(brandFilter, monthFilter);
+    });
+  
+    // 匯出 Excel
+    $('#exportExcel').on('click', function() {
+      const data = {
+        summary: allSummaryData,
+        totals: {
+          total_sales: $('#totalSales').text(),
+          total_quantity: $('#totalQuantity').text(),
+          total_commission: $('#totalCommission').text(),
+          total_net_amount: $('#totalNetAmount').text()
+        }
+      };
+      fetch('/admin/export_summary_excel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('匯出報表失敗');
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '總覽報表.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+        $('#errorMessage').text('匯出報表失敗：' + error.message).removeClass('success').addClass('error');
+      });
+    });
+  
+    // 頁面載入時自動載入報表
+    window.onload = function() {
+      loadSummary();
+    };
+  </script>
+</body>
+</html>

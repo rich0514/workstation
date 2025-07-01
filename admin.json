@@ -1,0 +1,6 @@
+{
+    "admin": {
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$B0avDM6UvHzGmkM1U1/9gA$Hf8JSNVsyO+7RI+a3Oq4WgpM2ji2giE+BSAkiyofZaw",
+        "role": "super"
+    }
+}
