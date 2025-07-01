@@ -1,0 +1,40 @@
+建議的專案結構如下，方便 Flask 專案維護與部署：
+
+F:\workstation-main\
+│
+├── app.py                  # 主程式
+├── requirements.txt        # Python 套件需求
+├── README.md               # 專案說明（可選）
+│
+├── users.json              # 使用者資料
+├── admin.json              # 管理員資料
+│
+├── static\                 # 靜態檔案（圖片、CSS、JS、上傳檔案等）
+│   ├── uploads\            # 上傳報表檔案
+│   ├── logo.jpg            # 公司 Logo
+│   └── ...                 # 其他靜態資源
+│
+├── templates\              # HTML 樣板
+│   ├── admin.html
+│   ├── view.html
+│   ├── report.html
+│   ├── summary.html
+│   └── ...                 # 其他頁面
+│
+├── users\                  # 各品牌報表資料夾
+│   └── <品牌名稱>\         # 每個品牌一個資料夾，內有報表 JSON
+│
+├── logs\                   # 日誌資料夾
+│   └── password_backup.log
+│
+└── ...                     # 其他檔案
+
+# 主要注意事項：
+# 1. app.py、requirements.txt、users.json、admin.json 等應在專案根目錄。
+# 2. templates/ 放所有 HTML 樣板。
+# 3. static/ 放所有靜態檔案（如 logo、上傳檔案）。
+# 4. users/ 放品牌報表資料。
+# 5. logs/ 放日誌檔案。
+# 6. .git 應該初始化在 F:\workstation-main\ 根目錄。
+
+# 若你要 push 到 GitHub，請在 F:\workstation-main\ 這一層執行 git 指令。
