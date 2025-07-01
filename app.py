@@ -764,7 +764,7 @@ def index():
 if __name__ == '__main__':
     # 使用 port 5002 運行
     app.run(debug=True, host='0.0.0.0', port=5002)
-app.register_blueprint(admin_bp)
+    app.run(debug=True, host='0.0.0.0', port=port)
 app.register_blueprint(view_bp)
 
 @app.route('/')
