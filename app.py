@@ -749,47 +749,47 @@ def index():
 if __name__ == '__main__':
     # 使用 port 5002 運行
     app.run(debug=True, host='0.0.0.0', port=5002)
-# 設定路徑（使用 os.path 確保跨平台相容）
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-USERS_FILE = os.path.join(BASE_DIR, 'users.json')      # 使用者資料檔案
-ADMIN_FILE = os.path.join(BASE_DIR, 'admin.json')      # 管理員資料檔案
-USERS_DIR = os.path.join(BASE_DIR, 'users')            # 使用者報表資料目錄
-UPLOADS_DIR = os.path.join(BASE_DIR, 'static', 'uploads')  # 上傳檔案目錄
-LOGO_FILE = os.path.join(BASE_DIR, 'static', 'logo.jpg') # Logo 檔案
-LOGS_DIR = os.path.join(BASE_DIR, 'logs')              # 日誌目錄
-PASSWORD_BACKUP_LOG = os.path.join(LOGS_DIR, 'password_backup.log')  # 密碼備份日誌
+    app.run(debug=True, host='0.0.0.0', port=5002)
+@app.route('/')
+def index():
+    # 直接顯示品牌頁面，不再做重導
+    return render_template('view.html')
 
-# 初始化資料夾與檔案
-for directory in [USERS_DIR, UPLOADS_DIR, LOGS_DIR]:
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-        logging.info(f"初始化目錄：{directory}")
+# ====================
+# 主程序執行
+# ====================
+if __name__ == '__main__':
+    # 使用 port 5002 運行
+    app.run(debug=True, host='0.0.0.0', port=5002)
 
-if os.path.exists(USERS_DIR):
-    existing_brands = [d for d in os.listdir(USERS_DIR) if os.path.isdir(os.path.join(USERS_DIR, d))]
-    logging.info(f"找到的品牌目錄：{existing_brands}")
-else:
-    logging.error(f"users 目錄不存在：{USERS_DIR}")
+# 註冊 Blueprint 與根路由
+# ====================
+app.register_blueprint(admin_bp)
+app.register_blueprint(view_bp)
 
-# 初始化 PasswordHasher
-ph = PasswordHasher()
+@app.route('/')
+@app.route('/')
+def index():
+    # 直接顯示品牌頁面，不再做重導
+    return render_template('view.html')
 
-def hash_password(password):
-    return ph.hash(password)
+# ====================
+# 主程序執行
+# ====================
+if __name__ == '__main__':
+    # 使用 port 5002 運行
+    app.run(debug=True, host='0.0.0.0', port=5002)
+@app.route('/')
+def index():
+    # 直接顯示品牌頁面，不再做重導
+    return render_template('view.html')
 
-def check_password(stored_password, provided_password):
-    try:
-        ph.verify(stored_password, provided_password)
-        return True
-    except Exception as e:
-        return False
-
-# 若檔案不存在則初始化
-if not os.path.exists(USERS_FILE):
-    with open(USERS_FILE, 'w', encoding='utf-8') as f:
-        json.dump({}, f, ensure_ascii=False)
-    logging.info(f"初始化 users.json 檔案：{USERS_FILE}")
-
+# ====================
+# 主程序執行
+# ====================
+if __name__ == '__main__':
+    # 使用 port 5002 運行
+    app.run(debug=True, host='0.0.0.0', port=5002)
 if not os.path.exists(ADMIN_FILE):
     admin_data = {
         'admin': {
@@ -1465,6 +1465,21 @@ def download_report_excel(username, month):
     except Exception as e:
         logging.error(f"刪除臨時檔案 {temp_path} 時發生錯誤：{str(e)}")
     return response
+
+# 關於 gunicorn -w 4 -b 0.0.0.0:10000 app:app 的說明
+
+# 這是部署 Flask 應用到生產環境時常用的指令，意思如下：
+# -w 4         # 啟動 4 個 worker 處理請求（可依主機 CPU 調整）
+# -b 0.0.0.0:10000  # 綁定所有網卡的 10000 埠口
+# app:app      # 匯入 app.py 檔案中的 app 物件
+
+# 若你在本地開發，直接用 python app.py 即可，不需要 gunicorn。
+# 若你在 Render、Heroku、Docker 等生產環境，建議用 gunicorn 來啟動 Flask，這樣效能與穩定性較佳。
+
+# 結論：
+# - 本地開發：不用設定 gunicorn，直接 python app.py
+# - 生產部署：建議用 gunicorn -w 4 -b 0.0.0.0:10000 app:app
+# - 若 Render 平台要求用 gunicorn，則必須設定
 
 # ====================
 # 註冊 Blueprint 與根路由
