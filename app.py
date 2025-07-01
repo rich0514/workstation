@@ -732,23 +732,23 @@ def download_report_excel(username, month):
         logging.error(f"刪除臨時檔案 {temp_path} 時發生錯誤：{str(e)}")
     return response
 
-# ====================from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, abort, Blueprint
-import os
-import json
-import logging
-import re
-import tempfile
-import shutil
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-import pandas as pd
-from argon2 import PasswordHasher
+# ====================
+# 註冊 Blueprint 與根路由
+# ====================
+app.register_blueprint(admin_bp)
+app.register_blueprint(view_bp)
+
+@app.route('/')
+def index():
+    # 直接顯示品牌頁面，不再做重導
+    return render_template('view.html')
 
 # ====================
-# 基礎設定與工具函式
+# 主程序執行
 # ====================
-app = Flask(__name__)
-
+if __name__ == '__main__':
+    # 使用 port 5002 運行
+    app.run(debug=True, host='0.0.0.0', port=5002)
 # 設定路徑（使用 os.path 確保跨平台相容）
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 USERS_FILE = os.path.join(BASE_DIR, 'users.json')      # 使用者資料檔案
