@@ -767,7 +767,6 @@ if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=port)
 app.register_blueprint(view_bp)
 
-@app.route('/')
 def index():
     # 直接顯示品牌頁面，不再做重導
     return render_template('view.html')
@@ -782,13 +781,6 @@ if __name__ == '__main__':
 def index():
     # 直接顯示品牌頁面，不再做重導
     return render_template('view.html')
-
-# ====================
-# 主程序執行
-# ====================
-if __name__ == '__main__':
-    # 使用 port 5002 運行
-    app.run(debug=True, host='0.0.0.0', port=5002)
 if not os.path.exists(ADMIN_FILE):
     admin_data = {
         'admin': {
@@ -815,7 +807,8 @@ password_backup_logger = logging.getLogger('password_backup')
 password_backup_logger.setLevel(logging.INFO)
 password_backup_handler = logging.FileHandler(PASSWORD_BACKUP_LOG, encoding='utf-8')
 password_backup_handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(message)s'))
-password_backup_logger.addHandler(password_backup_handler)
+password_backup_logger@app.route('/')
+.addHandler(password_backup_handler)
 
 def load_users():
     try:
@@ -1483,58 +1476,3 @@ def download_report_excel(username, month):
 # ====================
 # 註冊 Blueprint 與根路由
 # ====================
-app.register_blueprint(admin_bp)
-app.register_blueprint(view_bp)
-
-@app.route('/')
-def index():
-    # 直接顯示品牌頁面，不再做重導
-    return render_template('view.html')
-
-# ====================
-# 主程序執行
-# ====================
-if __name__ == '__main__':
-    # 使用 port 5002 運行
-    app.run(debug=True, host='0.0.0.0', port=5002)
-    app.run(debug=True, host='0.0.0.0', port=5002)
-@app.route('/')
-def index():
-    # 直接顯示品牌頁面，不再做重導
-    return render_template('view.html')
-
-# ====================
-# 主程序執行
-# ====================
-if __name__ == '__main__':
-    # 使用 port 5002 運行
-    app.run(debug=True, host='0.0.0.0', port=5002)
-
-# 註冊 Blueprint 與根路由
-# ====================
-app.register_blueprint(admin_bp)
-app.register_blueprint(view_bp)
-
-@app.route('/')
-@app.route('/')
-def index():
-    # 直接顯示品牌頁面，不再做重導
-    return render_template('view.html')
-
-# ====================
-# 主程序執行
-# ====================
-if __name__ == '__main__':
-    # 使用 port 5002 運行
-    app.run(debug=True, host='0.0.0.0', port=5002)
-@app.route('/')
-def index():
-    # 直接顯示品牌頁面，不再做重導
-    return render_template('view.html')
-
-# ====================
-# 主程序執行
-# ====================
-if __name__ == '__main__':
-    # 使用 port 5002 運行
-    app.run(debug=True, host='0.0.0.0', port=5002)
