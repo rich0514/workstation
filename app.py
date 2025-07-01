@@ -732,6 +732,21 @@ def download_report_excel(username, month):
         logging.error(f"刪除臨時檔案 {temp_path} 時發生錯誤：{str(e)}")
     return response
 
+# 關於 gunicorn -w 4 -b 0.0.0.0:10000 app:app 的說明
+
+# 這是部署 Flask 應用到生產環境時常用的指令，意思如下：
+# -w 4         # 啟動 4 個 worker 處理請求（可依主機 CPU 調整）
+# -b 0.0.0.0:10000  # 綁定所有網卡的 10000 埠口
+# app:app      # 匯入 app.py 檔案中的 app 物件
+
+# 若你在本地開發，直接用 python app.py 即可，不需要 gunicorn。
+# 若你在 Render、Heroku、Docker 等生產環境，建議用 gunicorn 來啟動 Flask，這樣效能與穩定性較佳。
+
+# 結論：
+# - 本地開發：不用設定 gunicorn，直接 python app.py
+# - 生產部署：建議用 gunicorn -w 4 -b 0.0.0.0:10000 app:app
+# - 若 Render 平台要求用 gunicorn，則必須設定
+
 # ====================
 # 註冊 Blueprint 與根路由
 # ====================
@@ -749,21 +764,6 @@ def index():
 if __name__ == '__main__':
     # 使用 port 5002 運行
     app.run(debug=True, host='0.0.0.0', port=5002)
-    app.run(debug=True, host='0.0.0.0', port=5002)
-@app.route('/')
-def index():
-    # 直接顯示品牌頁面，不再做重導
-    return render_template('view.html')
-
-# ====================
-# 主程序執行
-# ====================
-if __name__ == '__main__':
-    # 使用 port 5002 運行
-    app.run(debug=True, host='0.0.0.0', port=5002)
-
-# 註冊 Blueprint 與根路由
-# ====================
 app.register_blueprint(admin_bp)
 app.register_blueprint(view_bp)
 
