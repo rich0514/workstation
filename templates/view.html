@@ -263,12 +263,16 @@
                     usernameSelect.innerHTML = '<option value="">選擇品牌</option>';
                     if (data.users && Array.isArray(data.users)) {
                         data.users.forEach(user => {
-                            console.log('處理品牌：', user);
                             const gridItem = document.createElement("div");
                             gridItem.className = "grid-item";
                             gridItem.innerHTML = `
                                 <span>${user.username} (ID: ${user.user_id})</span>
                             `;
+                            // 點擊品牌小卡直接跳轉到密碼頁
+                            gridItem.style.cursor = "pointer";
+                            gridItem.onclick = function() {
+                                window.location.href = `/view/enter/${encodeURIComponent(user.username)}`;
+                            };
                             userGrid.appendChild(gridItem);
                             const option = document.createElement("option");
                             option.value = user.username;
