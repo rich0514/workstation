@@ -673,7 +673,31 @@ def view_reports(username):
     months.sort()
     return render_template('report.html', username=username, months=months)
 
-@app.route('/report/<username>/<month>')
+@view_bp.route('/enter/<path:username>')
+def enter_password(username):
+    # 顯示品牌密碼輸入頁
+    print(f"DEBUG: /enter/ username={repr(username)}")
+    return render_template('enter_password.html', username=username)
+
+@view_bp.route('/verify_and_redirect', methods=['POST'])
+def verify_and_redirect():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    users = load_users()
+    admins = load_admins()
+    if username not in users:
+        return jsonify({'error': '品牌名或密碼錯誤！'})
+    user_password_match = check_password(users[username]['password'], password)
+    admin_password_match = False
+    if 'admin' in admins:
+        admin_password_match = check_password(admins['admin']['password'], password)
+    if user_password_match or admin_password_match:
+        # 驗證成功，回傳該品牌報表頁網址
+        return jsonify({'success': True, 'redirect': url_for('view.view_reports', username=username)})
+    return jsonify({'error': '品牌名或密碼錯誤！'})
+
+@app.route('/report/<path:username>/<month>')
 def get_report(username, month):
     logging.debug(f"訪問 /report/{username}/{month}")
     try:
@@ -699,53 +723,6 @@ def get_report(username, month):
     except Exception as e:
         logging.error(f"載入報表失敗：{str(e)}")
         return jsonify({'error': f'載入報表失敗：{str(e)}'}), 500
-
-@app.route('/download_report_excel/<username>/<month>')
-def download_report_excel(username, month):
-    logging.debug(f"訪問 /download_report_excel/{username}/{month}")
-    users = load_users()
-    if username not in users:
-        return jsonify({'error': '品牌不存在！'}), 404
-    report_file = os.path.join(USERS_DIR, username, f"{month}.json")
-    if not os.path.exists(report_file):
-        return jsonify({'error': '報表不存在！'}), 404
-    with open(report_file, 'r', encoding='utf-8') as f:
-        report = json.load(f)
-    df = pd.DataFrame(report['data'])
-    summary = pd.DataFrame([{
-        '項目': '總計',
-        'SKU': '',
-        '銷售額': report['total_sales'],
-        '數量': report['total_quantity']
-    }])
-    df = pd.concat([df, summary], ignore_index=True)
-    temp_file = f"{username}_{month}_report.xlsx"
-    temp_path = os.path.join(tempfile.gettempdir(), temp_file)
-    with pd.ExcelWriter(temp_path, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False)
-    response = send_file(temp_path, as_attachment=True, download_name=temp_file)
-    try:
-        os.remove(temp_path)
-    except PermissionError as e:
-        logging.warning(f"無法刪除臨時檔案 {temp_path}：{str(e)}")
-    except Exception as e:
-        logging.error(f"刪除臨時檔案 {temp_path} 時發生錯誤：{str(e)}")
-    return response
-
-# 關於 gunicorn -w 4 -b 0.0.0.0:10000 app:app 的說明
-
-# 這是部署 Flask 應用到生產環境時常用的指令，意思如下：
-# -w 4         # 啟動 4 個 worker 處理請求（可依主機 CPU 調整）
-# -b 0.0.0.0:10000  # 綁定所有網卡的 10000 埠口
-# app:app      # 匯入 app.py 檔案中的 app 物件
-
-# 若你在本地開發，直接用 python app.py 即可，不需要 gunicorn。
-# 若你在 Render、Heroku、Docker 等生產環境，建議用 gunicorn 來啟動 Flask，這樣效能與穩定性較佳。
-
-# 結論：
-# - 本地開發：不用設定 gunicorn，直接 python app.py
-# - 生產部署：建議用 gunicorn -w 4 -b 0.0.0.0:10000 app:app
-# - 若 Render 平台要求用 gunicorn，則必須設定
 
 # ====================
 # 註冊 Blueprint 與根路由
