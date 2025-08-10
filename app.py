@@ -548,6 +548,65 @@ def export_summary_excel():
         logging.error(f"匯出總覽報表失敗：{str(e)}")
         return jsonify({'error': f'匯出總覽報表失敗：{str(e)}'}), 500
 
+@admin_bp.route('/batch_add_users', methods=['POST'])
+def batch_add_users():
+    """
+    批量新增品牌，接受 Excel 檔案，欄位需包含：品牌名稱、品牌編號、密碼、抽成百分比
+    """
+    file = request.files.get('file')
+    if not file:
+        return jsonify({'error': '請選擇 Excel 檔案！'})
+    try:
+        df = pd.read_excel(file)
+    except Exception as e:
+        return jsonify({'error': f'無法讀取 Excel 檔案：{str(e)}'})
+    required_columns = ['品牌名稱', '品牌編號', '密碼', '抽成百分比']
+    for col in required_columns:
+        if col not in df.columns:
+            return jsonify({'error': f'Excel 檔案缺少必要欄位：{col}'})
+    users = load_users()
+    added = 0
+    errors = []
+    for idx, row in df.iterrows():
+        username = str(row['品牌名稱']).strip()
+        user_id = str(row['品牌編號']).strip()
+        password = str(row['密碼']).strip()
+        commission = row['抽成百分比']
+        if not username or not user_id or not password or commission == '':
+            errors.append(f"第{idx+2}行資料不完整，已略過")
+            continue
+        if not re.match(r'^[\u4e00-\u9fff\w\s-]+$', username):
+            errors.append(f"第{idx+2}行品牌名稱格式錯誤，已略過")
+            continue
+        try:
+            commission = float(commission)
+            if commission < 0 or commission > 100:
+                errors.append(f"第{idx+2}行抽成百分比需在0~100之間，已略過")
+                continue
+        except Exception:
+            errors.append(f"第{idx+2}行抽成百分比格式錯誤，已略過")
+            continue
+        if username in users:
+            errors.append(f"第{idx+2}行品牌名稱已存在，已略過")
+            continue
+        hashed_password = hash_password(password)
+        if not check_password_unique(hashed_password, users):
+            errors.append(f"第{idx+2}行密碼已存在，已略過")
+            continue
+        users[username] = {
+            'user_id': user_id,
+            'password': hashed_password,
+            'commission': commission,
+            'hidden': False
+        }
+        password_backup_logger.info(f"用戶 {username} 的新密碼：{password}")
+        added += 1
+    save_users(users)
+    msg = f"成功新增 {added} 個品牌"
+    if errors:
+        msg += f"，有 {len(errors)} 筆資料未匯入"
+    return jsonify({'message': msg, 'errors': errors})
+
 # ====================
 # 品牌用戶路由 (Blueprint)
 # ====================
