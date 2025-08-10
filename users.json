@@ -99,11 +99,90 @@
     "創似紀生活文創": {
         "user_id": "001",
         "password": "$argon2id$v=19$m=65536,t=3,p=4$gUCxLJjoUo/J0RgQANZJXQ$O4cn8pqUoK9eoB/5MfLJqBmI38YwTWfRhL79CTLdg4o",
-        "commission": 30.0
+        "commission": 30.0,
+        "hidden": false
     },
     "月下戀人": {
         "user_id": "014",
         "password": "$argon2id$v=19$m=65536,t=3,p=4$4QGz/wCwf5QSxFXr3fIucw$JxU33XsBP8HRwsQEz0JUgtOcxSqh5rkmpXkF966Kicg",
         "commission": 30.0
+    },
+    "靜靜手作": {
+        "user_id": "24",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$0qq2KSF0HiQD8oQGzEJMXw$KvsWs2FXh8zPaJGPSksvTGdEmUzCrF0HBIu13HGTD6c",
+        "commission": 10.0,
+        "hidden": false
+    },
+    "佐伊ZOE": {
+        "user_id": "095",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$JrIj84JVKCbaeqyd1Unz7A$ZgOZQmtnmj01Q9MoHu0sushBpJbEQpsDZYrCjIvyfuA",
+        "commission": 10.0,
+        "hidden": false
+    },
+    "9899": {
+        "user_id": "026",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$WUJW1DtTubKzBRobXOYZ8w$3u7bVeVXMIPIeNe6pxCnRYs91LhCapehBY8FhSv896I",
+        "commission": 10.0,
+        "hidden": false
+    },
+    "台式奶綠": {
+        "user_id": "018",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$/0e7cMK5FzlcM0iFa+0TKA$CLEJJSWQB//oPptj9fDcn5XVUFYABOyDkh6h9nO4828",
+        "commission": 10.0,
+        "hidden": false
+    },
+    "柑仔店": {
+        "user_id": "016",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$6NoReigikNxjgFSQVZsL6g$X+/1zZnR09+4WivFv+fgvmW2wlD3QM4mQycQzaP+GQE",
+        "commission": 10.0,
+        "hidden": false
+    },
+    "甜秘密": {
+        "user_id": "055",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$ykqYlBO4yOLZTdRa0amUQg$XFYOHRY7BINpLSJmYSrjRsmm0Xf8pQAgsNVHTXPyMMw",
+        "commission": 30.0,
+        "hidden": false
+    },
+    "瓦特與雞米花": {
+        "user_id": "168",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$nmyAHxGTAEdp1kx8g2/gQg$/6KVwCO4Loma3zH2i+lOfB/WXkCvQ876fmFjD+fll4M",
+        "commission": 10.0,
+        "hidden": false
+    },
+    "呱呱森林": {
+        "user_id": "078",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$oJmMogXzfyKJezdfWjSYUA$zDbOEx5b8PAz7lZD5rvnkWLP48/GmpAodsldolw9Vng",
+        "commission": 30.0,
+        "hidden": false
+    },
+    "豹豹": {
+        "user_id": "711",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$VrC1bFNEFoiWSzlaY7MMNQ$CtCAa63wIskMpZ4Z/Aj7Kw5frKh4GEm3snYVDKIjv78",
+        "commission": 30.0,
+        "hidden": false
+    },
+    "心玥創意": {
+        "user_id": "013",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$V3yb27AP63jzJ4bdXO/7Kg$uqmqsEbDzEaRMOMgu56dZnTlNiurOW43yF0E/qw+RmQ",
+        "commission": 10.0,
+        "hidden": false
+    },
+    "凱莉文創": {
+        "user_id": "027",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$726YJwJpnZC3bNVKTdvmSw$9kYqe7t5VtHnT32tfLbJhBtSqUXNFQlZK429uAbQdfA",
+        "commission": 10.0,
+        "hidden": false
+    },
+    "CHI木堇": {
+        "user_id": "588",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$JtbYQIe6U3FiJ/k9otVImw$5ABRa6ZLdhgQR1CV18078TKDkgGebds3U5lP+jj5HGc",
+        "commission": 10.0,
+        "hidden": false
+    },
+    "勿食蛋糕": {
+        "user_id": "088",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$lAmNV9xLw71ZQ7mPM59Bvw$O6bTEbpRNj4Iel7RNjE6b7R3DO7Rq42BQ8gKHUhvllc",
+        "commission": 10.0,
+        "hidden": false
     }
 }
